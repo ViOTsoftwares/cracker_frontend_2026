@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
-import { SlidersHorizontal, X, ChevronDown } from "lucide-react";
+import { SlidersHorizontal, X } from "lucide-react";
 import { getProducts, type Product } from "../api/products";
 import { getCategories, type Category } from "../api/categories";
 import ProductCard from "../components/ProductCard";

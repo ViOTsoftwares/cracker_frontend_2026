@@ -1,11 +1,10 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Minus, Plus, Trash2, ShoppingCart, ArrowLeft } from "lucide-react";
 import { useCart } from "../context/CartContext";
 import toast from "react-hot-toast";
 
 export default function Cart() {
   const { items, totalItems, totalPrice, removeFromCart, increment, decrement, clearCart } = useCart();
-  const navigate = useNavigate();
 
   const savings = items.reduce(
     (sum, i) => sum + (i.product.originalPrice - i.product.offerPrice) * i.quantity,

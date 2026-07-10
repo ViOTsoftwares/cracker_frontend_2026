@@ -7,7 +7,6 @@ interface StarRatingProps {
 }
 
 export default function StarRating({ rating, count, size = 12 }: StarRatingProps) {
-  const filled = Math.round(rating);
   return (
     <div className="product-card-rating">
       <span className="rating-pill">

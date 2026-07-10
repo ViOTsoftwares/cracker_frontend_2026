@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { ShoppingCart, Minus, Plus, ChevronRight, Shield, Truck, RotateCcw, Star, Share2 } from "lucide-react";
+import { ShoppingCart, Minus, Plus, Shield, Truck, RotateCcw, Star, Share2 } from "lucide-react";
 import { getProductBySlug, getRelatedProducts, type Product } from "../api/products";
 import { useCart } from "../context/CartContext";
-import StarRating from "../components/StarRating";
 import ProductCard from "../components/ProductCard";
 import toast from "react-hot-toast";
 

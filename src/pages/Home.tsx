@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { ChevronRight, Zap, Truck, Shield, Star, Package } from "lucide-react";
+import { ChevronRight, Zap } from "lucide-react";
 import { getBanners, type Banner } from "../api/banners";
 import { getCategories, type Category } from "../api/categories";
 import { getFeaturedProducts, getProducts, type Product } from "../api/products";
