@@ -1,6 +1,17 @@
 {
   "rewrites": [
     {
+      "source": "/products/:slug",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": ".*(facebookexternalhit|WhatsApp|whatsapp|twitterbot|Twitterbot|telegrambot|TelegramBot|linkedinbot|LinkedInBot|slackbot|Slackbot|discordbot|Discordbot).*"
+        }
+      ],
+      "destination": "https://cracker-backend-2026.onrender.com/api/public/share/product/:slug"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }

@@ -5,7 +5,6 @@ import { getProductBySlug, getRelatedProducts, type Product } from "../api/produ
 import { useCart } from "../context/CartContext";
 import ProductCard from "../components/ProductCard";
 import toast from "react-hot-toast";
-import { ENV } from "../config/env";
 
 export default function ProductDetail() {
   const { slug } = useParams<{ slug: string }>();
@@ -49,18 +48,19 @@ export default function ProductDetail() {
   const handleShare = async () => {
     if (!product) return;
 
-    const shareUrl = `${ENV.API_URL}/share/product/${product.slug}`;
     const frontendUrl = `${window.location.origin}/products/${product.slug}`;
-    const imageUrl = product.images?.[0] || "";
+    const discountText = product.originalPrice !== product.offerPrice
+      ? `\n🔥 Offer Price: ₹${product.offerPrice} (Original: ₹${product.originalPrice} - ${product.discountPercentage}% OFF)`
+      : `\n💰 Price: ₹${product.offerPrice}`;
 
-    const shareText = `Check out this product on CrackersSiva! 🎆\n\n*${product.name}*\nPrice: ₹${product.offerPrice} (Original: ₹${product.originalPrice})${product.notes ? `\n\nNote: ${product.notes}` : ""}\n\n🖼️ Product Image: ${imageUrl}\n🌐 Product Link: ${frontendUrl}\n\n👉 Buy now here: ${shareUrl}`;
+    const shareText = `Hey, check out this product on CrackersSiva! 🎆\n\n*${product.name}*${discountText}${product.notes ? `\n📝 Note: ${product.notes}` : ""}\n\n👉 Buy now here:\n${frontendUrl}`;
 
     if (navigator.share) {
       try {
         await navigator.share({
           title: product.name,
-          text: `Check out ${product.name}!\n\n🖼️ Product Image: ${imageUrl}\n🌐 Product Link: ${frontendUrl}`,
-          url: shareUrl,
+          text: `Hey, check out this product on CrackersSiva! 🎆\n\n*${product.name}*${discountText}${product.notes ? `\n📝 Note: ${product.notes}` : ""}`,
+          url: frontendUrl,
         });
         toast.success("Shared successfully! 📢");
       } catch (error) {
@@ -76,7 +76,7 @@ export default function ProductDetail() {
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text)
       .then(() => {
-        toast.success("Product details and image link copied to clipboard! 📋");
+        toast.success("Product details and link copied to clipboard! 📋");
       })
       .catch(() => {
         toast.error("Failed to copy share link.");
