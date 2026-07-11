@@ -48,16 +48,15 @@ export default function ProductDetail() {
 
   const handleShare = async () => {
     if (!product) return;
-    const pageUrl = window.location.href;
-    const imageUrl = product.images?.[0] || "";
-    const shareText = `Check out this amazing product: ${product.name}!\n\nProduct Link: ${pageUrl}${imageUrl ? `\nImage Link: ${imageUrl}` : ""}`;
+    const shareUrl = `${ENV.API_URL}/share/product/${product.slug}`;
+    const shareText = `Check out this product on CrackersSiva! 🎆\n\n*${product.name}*\nPrice: ₹${product.offerPrice} (Original: ₹${product.originalPrice})${product.notes ? `\n\nNote: ${product.notes}` : ""}\n\n👉 Buy now here: ${shareUrl}`;
 
     if (navigator.share) {
       try {
         await navigator.share({
           title: product.name,
-          text: `Check out ${product.name}! \nImage: ${imageUrl}`,
-          url: pageUrl,
+          text: `Check out ${product.name}!`,
+          url: shareUrl,
         });
         toast.success("Shared successfully! 📢");
       } catch (error) {
@@ -68,14 +67,6 @@ export default function ProductDetail() {
     } else {
       copyToClipboard(shareText);
     }
-  };
-
-  const handleWhatsAppShare = () => {
-    if (!product) return;
-    const shareUrl = `${ENV.API_URL}/share/product/${product.slug}`;
-    const message = `Hey, check out this product on CrackersSiva! 🎆\n\n*${product.name}*\nPrice: ₹${product.offerPrice} (Original: ₹${product.originalPrice})${product.notes ? `\n\nNote: ${product.notes}` : ""}\n\n👉 *Buy now here:* ${shareUrl}`;
-    const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
-    window.open(whatsappUrl, "_blank");
   };
 
   const copyToClipboard = (text: string) => {
@@ -240,11 +231,6 @@ export default function ProductDetail() {
               )}
               <button className="btn-share" onClick={handleShare} title="Share Product">
                 <Share2 size={20} />
-              </button>
-              <button className="btn-whatsapp-share" onClick={handleWhatsAppShare} title="Share on WhatsApp">
-                <svg fill="currentColor" viewBox="0 0 24 24" style={{ width: 22, height: 22 }}>
-                  <path d="M12.031 2C6.492 2 2 6.484 2 12.016a11.88 11.88 0 0 0 1.839 6.27l-1.18 4.316 4.417-1.161a11.821 11.821 0 0 0 5.043 1.137C17.653 22.583 22 18.099 22 12.562c.005-5.531-4.48-10.562-9.969-10.562zm5.727 14.122c-.254.711-1.48 1.383-2.03 1.486-.531.109-1.222.195-3.64-.805-3.09-1.277-5.082-4.437-5.234-4.64-.156-.203-1.258-1.684-1.258-3.211 0-1.527.781-2.281 1.062-2.582.281-.301.613-.375.824-.375.207 0 .414.004.59.012.188.008.438-.074.684.52.254.617.863 2.113.938 2.266.078.152.129.332.027.531-.102.203-.152.328-.305.508-.152.176-.32.395-.457.531-.152.152-.313.316-.133.629.18.313.8 1.312 1.715 2.125.176.156.328.258.551.371.309.156.484.129.664-.078.18-.207.781-.906.992-1.219.211-.313.422-.258.711-.152.289.109 1.84.867 2.152 1.023.313.156.52.234.598.371.078.137.078.801-.176 1.512z"/>
-                </svg>
               </button>
             </div>
 
