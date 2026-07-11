@@ -3,7 +3,6 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import { ShoppingCart, Minus, Plus, Shield, Truck, RotateCcw, Star, Share2 } from "lucide-react";
 import { getProductBySlug, getRelatedProducts, type Product } from "../api/products";
 import { useCart } from "../context/CartContext";
-import { ENV } from "../config/env";
 import ProductCard from "../components/ProductCard";
 import toast from "react-hot-toast";
 
@@ -48,7 +47,7 @@ export default function ProductDetail() {
 
   const handleShare = async () => {
     if (!product) return;
-    const shareUrl = `${ENV.API_URL}/share/product/${product.slug}`;
+    const shareUrl = window.location.href;
     const shareText = `Check out this product on CrackersSiva! 🎆\n\n*${product.name}*\nPrice: ₹${product.offerPrice} (Original: ₹${product.originalPrice})${product.notes ? `\n\nNote: ${product.notes}` : ""}\n\n👉 Buy now here: ${shareUrl}`;
 
     if (navigator.share) {
