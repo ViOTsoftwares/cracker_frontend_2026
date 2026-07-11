@@ -756,6 +756,20 @@ button { cursor: pointer; font-family: inherit; border: none; background: none; 
   background: var(--bg);
   border-color: var(--text-muted);
 }
+.btn-whatsapp-share {
+  background: #25d366;
+  color: #fff;
+  border: 1px solid #20ba5a;
+  border-radius: var(--radius);
+  width: 48px; height: 48px;
+  display: flex; align-items: center; justify-content: center;
+  transition: var(--transition); cursor: pointer;
+  flex: 0 0 48px;
+}
+.btn-whatsapp-share:hover {
+  background: #20ba5a;
+  box-shadow: 0 4px 16px rgba(37,211,102,.3);
+}
 
 .info-card {
   background: var(--bg); border-radius: var(--radius);
