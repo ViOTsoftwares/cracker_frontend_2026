@@ -5,6 +5,7 @@ import { getProductBySlug, getRelatedProducts, type Product } from "../api/produ
 import { useCart } from "../context/CartContext";
 import ProductCard from "../components/ProductCard";
 import toast from "react-hot-toast";
+import { ENV } from "../config/env";
 
 export default function ProductDetail() {
   const { slug } = useParams<{ slug: string }>();
@@ -47,14 +48,18 @@ export default function ProductDetail() {
 
   const handleShare = async () => {
     if (!product) return;
-    const shareUrl = window.location.href;
-    const shareText = `Check out this product on CrackersSiva! 🎆\n\n*${product.name}*\nPrice: ₹${product.offerPrice} (Original: ₹${product.originalPrice})${product.notes ? `\n\nNote: ${product.notes}` : ""}\n\n👉 Buy now here: ${shareUrl}`;
+
+    const shareUrl = `${ENV.API_URL}/share/product/${product.slug}`;
+    const frontendUrl = `${window.location.origin}/products/${product.slug}`;
+    const imageUrl = product.images?.[0] || "";
+
+    const shareText = `Check out this product on CrackersSiva! 🎆\n\n*${product.name}*\nPrice: ₹${product.offerPrice} (Original: ₹${product.originalPrice})${product.notes ? `\n\nNote: ${product.notes}` : ""}\n\n🖼️ Product Image: ${imageUrl}\n🌐 Product Link: ${frontendUrl}\n\n👉 Buy now here: ${shareUrl}`;
 
     if (navigator.share) {
       try {
         await navigator.share({
           title: product.name,
-          text: `Check out ${product.name}!`,
+          text: `Check out ${product.name}!\n\n🖼️ Product Image: ${imageUrl}\n🌐 Product Link: ${frontendUrl}`,
           url: shareUrl,
         });
         toast.success("Shared successfully! 📢");
