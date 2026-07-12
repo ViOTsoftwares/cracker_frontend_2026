@@ -4,6 +4,7 @@ import type { Product } from "../api/products";
 import { useCart } from "../context/CartContext";
 import StarRating from "./StarRating";
 import toast from "react-hot-toast";
+import { getImageUrl } from "../utils/imageHelper";
 
 interface ProductCardProps {
   product: Product;
@@ -24,7 +25,7 @@ export default function ProductCard({ product }: ProductCardProps) {
       <div className="product-card-img-wrap">
         {product.images?.[0] ? (
           <img
-            src={product.images[0]}
+            src={getImageUrl(product.images[0], "products")}
             alt={product.name}
             className="product-card-img"
             loading="lazy"

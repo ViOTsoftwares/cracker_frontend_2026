@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { Minus, Plus, Trash2, ShoppingCart, ArrowLeft } from "lucide-react";
 import { useCart } from "../context/CartContext";
 import toast from "react-hot-toast";
+import { getImageUrl } from "../utils/imageHelper";
 
 export default function Cart() {
   const { items, totalItems, totalPrice, removeFromCart, increment, decrement, clearCart } = useCart();
@@ -69,7 +70,7 @@ export default function Cart() {
                 <Link to={`/products/${item.product.slug}`} style={{ flexShrink: 0 }}>
                   {item.product.images?.[0] ? (
                     <img
-                      src={item.product.images[0]}
+                      src={getImageUrl(item.product.images[0], "products")}
                       alt={item.product.name}
                       style={{ width: 80, height: 80, objectFit: "cover", borderRadius: 8, border: "1px solid #f3f4f6" }}
                     />

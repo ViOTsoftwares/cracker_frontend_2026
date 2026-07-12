@@ -1,14 +1,29 @@
 import { Link } from "react-router-dom";
 import { Phone, Mail, MapPin } from "lucide-react";
+import { useSettings } from "../context/SettingsContext";
 
 export default function Footer() {
+  const { settings } = useSettings();
+
+  const renderLogoText = (name: string) => {
+    if (name.toLowerCase().startsWith("crackers")) {
+      const rest = name.substring(8);
+      return (
+        <>
+          🎆 Crackers<span>{rest}</span>
+        </>
+      );
+    }
+    return <>🎆 {name}</>;
+  };
+
   return (
     <footer className="footer">
       <div className="container">
         <div className="footer-main">
           {/* Brand */}
           <div className="footer-brand">
-            <div className="footer-brand-logo">🎆 Crackers<span>Siva</span></div>
+            <div className="footer-brand-logo">{renderLogoText(settings.project)}</div>
             <p className="footer-brand-desc">
               India's most trusted crackers store. Celebrating every festival with the brightest
               fireworks since 1995.
@@ -16,15 +31,15 @@ export default function Footer() {
             <div style={{ display: "flex", flexDirection: "column", gap: 7, marginTop: 4 }}>
               <div className="footer-contact-item">
                 <Phone size={13} style={{ color: "#f97316", flexShrink: 0 }} />
-                <span>+91 98765 43210</span>
+                <span>{settings.phone}</span>
               </div>
               <div className="footer-contact-item">
                 <Mail size={13} style={{ color: "#f97316", flexShrink: 0 }} />
-                <span>info@crackerssiva.com</span>
+                <span>{settings.email}</span>
               </div>
               <div className="footer-contact-item">
                 <MapPin size={13} style={{ color: "#f97316", flexShrink: 0 }} />
-                <span>Sivakasi, Tamil Nadu</span>
+                <span>{settings.address}</span>
               </div>
             </div>
           </div>
@@ -68,7 +83,7 @@ export default function Footer() {
 
       <div className="footer-bottom">
         <div className="container">
-          © {new Date().getFullYear()} CrackersSiva. All rights reserved. Made with ❤️ in Sivakasi
+          © {new Date().getFullYear()} {settings.project}. All rights reserved. Made with ❤️ in Sivakasi
         </div>
       </div>
     </footer>

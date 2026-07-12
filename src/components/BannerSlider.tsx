@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { Banner } from "../api/banners";
+import { getImageUrl } from "../utils/imageHelper";
 
 interface BannerSliderProps {
   banners: Banner[];
@@ -42,13 +43,13 @@ export default function BannerSlider({ banners }: BannerSliderProps) {
           {banner.link ? (
             <a href={banner.link} target="_blank" rel="noopener noreferrer">
               <img
-                src={isMobile ? banner.mobileImage : banner.desktopImage}
+                src={isMobile ? getImageUrl(banner.mobileImage, "banners") : getImageUrl(banner.desktopImage, "banners")}
                 alt={banner.title}
               />
             </a>
           ) : (
             <img
-              src={isMobile ? banner.mobileImage : banner.desktopImage}
+              src={isMobile ? getImageUrl(banner.mobileImage, "banners") : getImageUrl(banner.desktopImage, "banners")}
               alt={banner.title}
             />
           )}

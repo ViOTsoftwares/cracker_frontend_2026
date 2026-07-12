@@ -5,6 +5,8 @@ import { getProductBySlug, getRelatedProducts, type Product } from "../api/produ
 import { useCart } from "../context/CartContext";
 import ProductCard from "../components/ProductCard";
 import toast from "react-hot-toast";
+import { useSettings } from "../context/SettingsContext";
+import { getImageUrl } from "../utils/imageHelper";
 
 export default function ProductDetail() {
   const { slug } = useParams<{ slug: string }>();
@@ -14,6 +16,7 @@ export default function ProductDetail() {
   const [activeImg, setActiveImg] = useState(0);
   const [qty, setQty] = useState(1);
   const { addToCart, items } = useCart();
+  const { settings } = useSettings();
   const navigate = useNavigate();
 
   const inCart = items.find((i) => i.product._id === product?._id);
@@ -53,15 +56,38 @@ export default function ProductDetail() {
       ? `\n🔥 Offer Price: ₹${product.offerPrice} (Original: ₹${product.originalPrice} - ${product.discountPercentage}% OFF)`
       : `\n💰 Price: ₹${product.offerPrice}`;
 
-    const shareText = `Hey, check out this product on CrackersSiva! 🎆\n\n*${product.name}*${discountText}${product.notes ? `\n📝 Note: ${product.notes}` : ""}\n\n👉 Buy now here:\n${frontendUrl}`;
+    const shareText = `Hey, check out this product on ${settings.project}! 🎆\n\n*${product.name}*${discountText}${product.notes ? `\n📝 Note: ${product.notes}` : ""}\n\n👉 Buy now here:\n${frontendUrl}`;
 
     if (navigator.share) {
       try {
-        await navigator.share({
+        const imageUrl = product.images?.[0];
+        let shareData: ShareData = {
           title: product.name,
-          text: `Hey, check out this product on CrackersSiva! 🎆\n\n*${product.name}*${discountText}${product.notes ? `\n📝 Note: ${product.notes}` : ""}`,
+          text: `Hey, check out this product on ${settings.project}! 🎆\n\n*${product.name}*${discountText}${product.notes ? `\n📝 Note: ${product.notes}` : ""}`,
           url: frontendUrl,
-        });
+        };
+
+        if (imageUrl) {
+          try {
+            const fullImageUrl = getImageUrl(imageUrl, "products");
+            const response = await fetch(fullImageUrl);
+            const blob = await response.blob();
+            const ext = blob.type.split("/")[1] || "jpg";
+            const filename = `${product.slug}.${ext}`;
+            const file = new File([blob], filename, { type: blob.type });
+
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+              shareData = {
+                ...shareData,
+                files: [file],
+              };
+            }
+          } catch (fetchError) {
+            console.error("Could not download product image for native share:", fetchError);
+          }
+        }
+
+        await navigator.share(shareData);
         toast.success("Shared successfully! 📢");
       } catch (error) {
         if ((error as Error).name !== "AbortError") {
@@ -134,7 +160,7 @@ export default function ProductDetail() {
           <div className="detail-img-gallery">
             <div className="gallery-main">
               {product.images?.[activeImg] ? (
-                <img src={product.images[activeImg]} alt={product.name} />
+                <img src={getImageUrl(product.images[activeImg], "products")} alt={product.name} />
               ) : (
                 <div style={{ fontSize: 96, display: "flex", alignItems: "center", justifyContent: "center", width: "100%", height: "100%", background: "#fff7ed" }}>
                   🎆
@@ -149,7 +175,7 @@ export default function ProductDetail() {
                     className={`gallery-thumb ${idx === activeImg ? "active" : ""}`}
                     onClick={() => setActiveImg(idx)}
                   >
-                    <img src={img} alt={`${product.name} ${idx + 1}`} />
+                    <img src={getImageUrl(img, "products")} alt={`${product.name} ${idx + 1}`} />
                   </div>
                 ))}
               </div>
@@ -222,7 +248,7 @@ export default function ProductDetail() {
                 <>
                   <button className="btn-add-cart" onClick={handleAddToCart}>
                     <ShoppingCart size={20} />
-                    {inCart ? "Add More to Cart" : "Add to Cart"}
+                    {inCart ? "Add to Cart" : "Add to Cart"}
                   </button>
                   <button className="btn-buy-now" onClick={() => { handleAddToCart(); navigate("/cart"); }}>
                     Buy Now

@@ -1,6 +1,7 @@
 import { X, ShoppingCart, Trash2, Minus, Plus } from "lucide-react";
 import { useCart } from "../context/CartContext";
 import { useNavigate } from "react-router-dom";
+import { getImageUrl } from "../utils/imageHelper";
 
 interface CartDrawerProps {
   onClose: () => void;
@@ -54,7 +55,7 @@ export default function CartDrawer({ onClose }: CartDrawerProps) {
               <div key={item.product._id} className="cart-item">
                 {item.product.images?.[0] ? (
                   <img
-                    src={item.product.images[0]}
+                    src={getImageUrl(item.product.images[0], "products")}
                     alt={item.product.name}
                     className="cart-item-img"
                   />

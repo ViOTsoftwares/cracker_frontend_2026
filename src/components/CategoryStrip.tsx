@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import type { Category } from "../api/categories";
+import { getImageUrl } from "../utils/imageHelper";
 
 interface CategoryStripProps {
   categories: Category[];
@@ -42,7 +43,7 @@ export default function CategoryStrip({ categories, selected, onSelect }: Catego
               onClick={() => handleClick(cat)}
             >
               {cat.image ? (
-                <img src={cat.image} alt={cat.name} className="category-chip-img" />
+                <img src={getImageUrl(cat.image, "categories")} alt={cat.name} className="category-chip-img" />
               ) : (
                 <div className="category-chip-placeholder">{getEmoji(cat.name)}</div>
               )}

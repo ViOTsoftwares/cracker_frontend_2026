@@ -2,10 +2,16 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ShoppingCart, Search, Flame, Menu, X } from "lucide-react";
 import { useCart } from "../context/CartContext";
+import { useSettings } from "../context/SettingsContext";
+import { useAuth } from "../context/AuthContext";
+import { LogOut, User as UserIcon } from "lucide-react";
+import { getImageUrl } from "../utils/imageHelper";
 import CartDrawer from "./CartDrawer";
 
 export default function Navbar() {
   const { totalItems } = useCart();
+  const { settings } = useSettings();
+  const { user, logout } = useAuth();
   const [search, setSearch] = useState("");
   const [cartOpen, setCartOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -27,6 +33,18 @@ export default function Navbar() {
     "Aerial Shots", "Rockets", "Flower Pots",
   ];
 
+  const renderLogoText = (name: string) => {
+    if (name.toLowerCase().startsWith("crackers")) {
+      const rest = name.substring(8);
+      return (
+        <>
+          Crackers<span>{rest}</span>
+        </>
+      );
+    }
+    return <>{name}</>;
+  };
+
   return (
     <>
       <nav className="navbar">
@@ -36,7 +54,7 @@ export default function Navbar() {
           <Link to="/" className="navbar-logo">
             <div className="navbar-logo-icon">🎆</div>
             <div className="navbar-logo-text">
-              Crackers<span>Siva</span>
+              {renderLogoText(settings.project)}
             </div>
           </Link>
 
@@ -70,6 +88,28 @@ export default function Navbar() {
                 <span className="cart-badge">{totalItems > 99 ? "99+" : totalItems}</span>
               )}
             </button>
+            {user ? (
+              <div className="nav-user-dropdown-container" style={{ display: "flex", gap: "6px" }}>
+                <Link to="/profile" className="nav-btn" style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                  <img
+                    src={getImageUrl(user.profileImage, "profiles")}
+                    alt="User"
+                    style={{ width: "20px", height: "20px", borderRadius: "50%", objectFit: "cover" }}
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = "/default-avatar.svg";
+                    }}
+                  />
+                  <span>{user.name || user.email.split("@")[0]}</span>
+                </Link>
+                <button onClick={logout} className="nav-btn" title="Logout" style={{ padding: "8px 10px", background: "rgba(239, 68, 68, 0.2)" }}>
+                  <LogOut size={16} />
+                </button>
+              </div>
+            ) : (
+              <Link to="/login" className="nav-btn nav-login-btn" style={{ background: "var(--primary)" }}>
+                <span>Login</span>
+              </Link>
+            )}
           </div>
 
           {/* Mobile Icons */}
@@ -151,10 +191,28 @@ export default function Navbar() {
                   {item}
                 </Link>
               ))}
-              <Link to="/cart" className="mobile-menu-item mobile-menu-cart" onClick={() => setMenuOpen(false)}>
-                <ShoppingCart size={16} /> My Cart
+              <Link to="/cart" className="mobile-menu-item" onClick={() => setMenuOpen(false)}>
+                <ShoppingCart size={16} style={{ marginRight: 8 }} /> My Cart
                 {totalItems > 0 && <span className="cart-badge" style={{ position: "static", marginLeft: 4 }}>{totalItems}</span>}
               </Link>
+              {user ? (
+                <>
+                  <Link to="/profile" className="mobile-menu-item" onClick={() => setMenuOpen(false)}>
+                    <UserIcon size={16} style={{ marginRight: 8 }} /> My Profile
+                  </Link>
+                  <button
+                    onClick={() => { logout(); setMenuOpen(false); }}
+                    className="mobile-menu-item"
+                    style={{ display: "flex", width: "100%", textAlign: "left", color: "#f87171", alignItems: "center" }}
+                  >
+                    <LogOut size={16} style={{ marginRight: 8 }} /> Logout
+                  </button>
+                </>
+              ) : (
+                <Link to="/login" className="mobile-menu-item mobile-menu-cart" onClick={() => setMenuOpen(false)}>
+                  Login
+                </Link>
+              )}
             </div>
           </div>
         )}

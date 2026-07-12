@@ -1,6 +1,8 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { CartProvider } from "./context/CartContext";
+import { SettingsProvider } from "./context/SettingsContext";
+import { AuthProvider } from "./context/AuthContext";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import ScrollToTop from "./components/ScrollToTop";
@@ -8,11 +10,15 @@ import Home from "./pages/Home";
 import Products from "./pages/Products";
 import ProductDetail from "./pages/ProductDetail";
 import Cart from "./pages/Cart";
+import Login from "./pages/Login";
+import Profile from "./pages/Profile";
 
 export default function App() {
   return (
-    <CartProvider>
-      <BrowserRouter>
+    <SettingsProvider>
+      <CartProvider>
+        <AuthProvider>
+          <BrowserRouter>
         <ScrollToTop />
         <Navbar />
         <Routes>
@@ -20,6 +26,8 @@ export default function App() {
           <Route path="/products" element={<Products />} />
           <Route path="/products/:slug" element={<ProductDetail />} />
           <Route path="/cart" element={<Cart />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/profile" element={<Profile />} />
           {/* 404 */}
           <Route
             path="*"
@@ -54,7 +62,9 @@ export default function App() {
             },
           }}
         />
-      </BrowserRouter>
-    </CartProvider>
+          </BrowserRouter>
+        </AuthProvider>
+      </CartProvider>
+    </SettingsProvider>
   );
 }
