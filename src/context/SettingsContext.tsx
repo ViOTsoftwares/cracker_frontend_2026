@@ -14,6 +14,7 @@ export interface Setting {
   linkedinlink?: string;
   instagramlink?: string;
   facebooklink?: string;
+  deliveryFee?: number;
 }
 
 interface SettingsContextType {
@@ -32,6 +33,7 @@ const defaultSettings: Setting = {
   email: "info@crackerssiva.com",
   address: "Sivakasi, Tamil Nadu",
   logo: "",
+  deliveryFee: 0,
 };
 
 export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {

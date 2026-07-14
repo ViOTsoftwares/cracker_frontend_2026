@@ -1,11 +1,14 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Minus, Plus, Trash2, ShoppingCart, ArrowLeft } from "lucide-react";
 import { useCart } from "../context/CartContext";
+import { useAuth } from "../context/AuthContext";
 import toast from "react-hot-toast";
 import { getImageUrl } from "../utils/imageHelper";
 
 export default function Cart() {
   const { items, totalItems, totalPrice, removeFromCart, increment, decrement, clearCart } = useCart();
+  const navigate = useNavigate();
+  const { token } = useAuth();
 
   const savings = items.reduce(
     (sum, i) => sum + (i.product.originalPrice - i.product.offerPrice) * i.quantity,
@@ -170,7 +173,17 @@ export default function Cart() {
               </div>
             )}
 
-            <button className="checkout-btn" onClick={() => toast("Checkout coming soon! 🚀")}>
+             <button
+              className="checkout-btn"
+              onClick={() => {
+                if (token) {
+                  navigate("/checkout");
+                } else {
+                  toast.error("Please login to proceed to checkout!");
+                  navigate("/login?redirect=/checkout");
+                }
+              }}
+            >
               Proceed to Checkout →
             </button>
             <p style={{ textAlign: "center", fontSize: "0.76rem", color: "#9ca3af", marginTop: 10 }}>

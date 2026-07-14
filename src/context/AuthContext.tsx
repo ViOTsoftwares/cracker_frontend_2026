@@ -57,6 +57,7 @@ export interface Order {
   paymentStatus: "pending" | "paid" | "failed";
   paymentMethod: "cod" | "online";
   orderStatus: "pending" | "processing" | "shipped" | "delivered" | "cancelled";
+  deliveryFee?: number;
   createdAt: string;
   updatedAt: string;
 }

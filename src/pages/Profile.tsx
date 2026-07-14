@@ -723,6 +723,10 @@ export default function Profile() {
                   <span>Discount</span>
                   <span>₹{selectedOrder.discount.toLocaleString("en-IN")}</span>
                 </div>
+                <div className="tally-row">
+                  <span>Delivery Fee</span>
+                  <span>{selectedOrder.deliveryFee && selectedOrder.deliveryFee > 0 ? `₹${selectedOrder.deliveryFee.toLocaleString("en-IN")}` : "FREE"}</span>
+                </div>
                 <div className="tally-row grand-total">
                   <span>Grand Total</span>
                   <span>₹{selectedOrder.total.toLocaleString("en-IN")}</span>

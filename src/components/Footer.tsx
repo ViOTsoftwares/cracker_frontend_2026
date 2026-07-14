@@ -71,11 +71,11 @@ export default function Footer() {
           <div>
             <div className="footer-col-title">Help</div>
             <div className="footer-links">
-              <a href="#">Contact Us</a>
-              <a href="#">Shipping Policy</a>
-              <a href="#">Return Policy</a>
-              <a href="#">Privacy Policy</a>
-              <a href="#">Terms of Service</a>
+              <a href={`tel:${settings.phone || ""}`}>Contact Support</a>
+              <Link to="/page/SHIPPING_POLICY">Shipping Policy</Link>
+              <Link to="/page/REFUND_POLICY">Refund Policy</Link>
+              <Link to="/page/PRIVACY_POLICY">Privacy Policy</Link>
+              <Link to="/page/TEAMS_OF_SERVICES">Terms of Service</Link>
             </div>
           </div>
         </div>
