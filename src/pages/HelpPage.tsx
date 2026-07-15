@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { useParams, Link, useLocation } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import baseAPI from "../api/axios";
 import { useSettings } from "../context/SettingsContext";
 import { Shield, FileText, RefreshCw, Truck, ChevronRight, Clock, HelpCircle } from "lucide-react";
-import toast from "react-hot-toast";
 
 interface CMSContent {
   _id: string;
@@ -16,7 +15,6 @@ interface CMSContent {
 export default function HelpPage() {
   const { identifier } = useParams<{ identifier: string }>();
   const { settings } = useSettings();
-  const location = useLocation();
 
   const [loading, setLoading] = useState(true);
   const [pageData, setPageData] = useState<CMSContent | null>(null);
