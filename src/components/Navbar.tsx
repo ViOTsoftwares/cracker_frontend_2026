@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ShoppingCart, Search, Flame, Menu, X } from "lucide-react";
 import { useCart } from "../context/CartContext";
@@ -7,6 +7,7 @@ import { useAuth } from "../context/AuthContext";
 import { LogOut, User as UserIcon } from "lucide-react";
 import { getImageUrl } from "../utils/imageHelper";
 import CartDrawer from "./CartDrawer";
+import { getCategories, type Category } from "../api/categories";
 
 export default function Navbar() {
   const { totalItems } = useCart();
@@ -17,6 +18,11 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const navigate = useNavigate();
+  const [categories, setCategories] = useState<Category[]>([]);
+
+  useEffect(() => {
+    getCategories().then((r) => setCategories(r.result || []));
+  }, []);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,11 +33,6 @@ export default function Navbar() {
       setMenuOpen(false);
     }
   };
-
-  const subNavItems = [
-    "All Products", "Sparklers", "Ground Chakkar",
-    "Aerial Shots", "Rockets", "Flower Pots",
-  ];
 
   const renderLogoText = (name: string) => {
     if (name.toLowerCase().startsWith("crackers")) {
@@ -52,7 +53,15 @@ export default function Navbar() {
         <div className="container navbar-inner">
           {/* Logo */}
           <Link to="/" className="navbar-logo">
-            <div className="navbar-logo-icon">🎆</div>
+            {settings.logo ? (
+              <img
+                src={getImageUrl(settings.logo, "logos")}
+                alt={settings.project}
+                className="navbar-logo-img"
+              />
+            ) : (
+              <div className="navbar-logo-icon"><Flame size={20} color="#fff" /></div>
+            )}
             <div className="navbar-logo-text">
               {renderLogoText(settings.project)}
             </div>
@@ -161,34 +170,27 @@ export default function Navbar() {
           </div>
         )}
 
-        {/* Sub Nav — Desktop */}
-        <div className="subnav-bar">
-          <div className="container subnav-inner">
-            {subNavItems.map((item) => (
-              <Link
-                key={item}
-                to={`/products?search=${encodeURIComponent(item === "All Products" ? "" : item)}`}
-                className="subnav-link"
-                onClick={() => setMenuOpen(false)}
-              >
-                {item}
-              </Link>
-            ))}
-          </div>
-        </div>
+
 
         {/* Mobile Menu Drawer */}
         {menuOpen && (
           <div className="mobile-menu">
             <div className="mobile-menu-items">
-              {subNavItems.map((item) => (
+              <Link
+                to="/products"
+                className="mobile-menu-item"
+                onClick={() => setMenuOpen(false)}
+              >
+                All Products
+              </Link>
+              {categories.map((cat) => (
                 <Link
-                  key={item}
-                  to={`/products?search=${encodeURIComponent(item === "All Products" ? "" : item)}`}
+                  key={cat._id}
+                  to={`/products?category=${cat.slug}`}
                   className="mobile-menu-item"
                   onClick={() => setMenuOpen(false)}
                 >
-                  {item}
+                  {cat.name}
                 </Link>
               ))}
               <Link to="/cart" className="mobile-menu-item" onClick={() => setMenuOpen(false)}>

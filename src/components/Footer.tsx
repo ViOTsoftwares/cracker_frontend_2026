@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
-import { Phone, Mail, MapPin } from "lucide-react";
+import { Phone, Mail, MapPin, Flame, Heart } from "lucide-react";
 import { useSettings } from "../context/SettingsContext";
+import { getImageUrl } from "../utils/imageHelper";
 
 export default function Footer() {
   const { settings } = useSettings();
@@ -10,11 +11,11 @@ export default function Footer() {
       const rest = name.substring(8);
       return (
         <>
-          🎆 Crackers<span>{rest}</span>
+          Crackers<span>{rest}</span>
         </>
       );
     }
-    return <>🎆 {name}</>;
+    return <>{name}</>;
   };
 
   return (
@@ -23,7 +24,18 @@ export default function Footer() {
         <div className="footer-main">
           {/* Brand */}
           <div className="footer-brand">
-            <div className="footer-brand-logo">{renderLogoText(settings.project)}</div>
+            <div className="footer-brand-logo">
+              {settings.logo ? (
+                <img
+                  src={getImageUrl(settings.logo, "logos")}
+                  alt={settings.project}
+                  style={{ height: "32px", width: "auto", objectFit: "contain", borderRadius: "4px" }}
+                />
+              ) : (
+                <span style={{ display: "flex", alignItems: "center" }}><Flame size={24} color="#f97316" /></span>
+              )}
+              {renderLogoText(settings.project)}
+            </div>
             <p className="footer-brand-desc">
               India's most trusted crackers store. Celebrating every festival with the brightest
               fireworks since 1995.
@@ -83,7 +95,7 @@ export default function Footer() {
 
       <div className="footer-bottom">
         <div className="container">
-          © {new Date().getFullYear()} {settings.project}. All rights reserved. Made with ❤️ in Sivakasi
+          © {new Date().getFullYear()} {settings.project}. All rights reserved. Made with <Heart size={14} fill="#ef4444" color="#ef4444" style={{ display: "inline", verticalAlign: "middle", margin: "0 2px" }} /> in Sivakasi
         </div>
       </div>
     </footer>

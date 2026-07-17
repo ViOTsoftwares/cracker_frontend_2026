@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { Minus, Plus, Trash2, ShoppingCart, ArrowLeft } from "lucide-react";
+import { Minus, Plus, Trash2, ShoppingCart, ArrowLeft, ArrowRight } from "lucide-react";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 import toast from "react-hot-toast";
@@ -19,11 +19,11 @@ export default function Cart() {
     return (
       <main style={{ minHeight: "70vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
         <div className="empty-state">
-          <div className="empty-icon">🛒</div>
+          <div className="empty-icon"><ShoppingCart size={48} color="#9ca3af" /></div>
           <div className="empty-title">Your cart is empty!</div>
           <p className="empty-sub">You haven't added any crackers yet.</p>
           <Link to="/products" className="empty-btn" style={{ display: "inline-block" }}>
-            Start Shopping 🎆
+            Start Shopping <ArrowRight size={16} style={{ marginLeft: 4 }} />
           </Link>
         </div>
       </main>
@@ -71,17 +71,16 @@ export default function Cart() {
               >
                 {/* Image */}
                 <Link to={`/products/${item.product.slug}`} style={{ flexShrink: 0 }}>
-                  {item.product.images?.[0] ? (
-                    <img
-                      src={getImageUrl(item.product.images[0], "products")}
-                      alt={item.product.name}
-                      style={{ width: 80, height: 80, objectFit: "cover", borderRadius: 8, border: "1px solid #f3f4f6" }}
-                    />
-                  ) : (
-                    <div style={{ width: 80, height: 80, background: "#fff7ed", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 32 }}>
-                      🎆
-                    </div>
-                  )}
+                  <img
+                    src={getImageUrl(item.product.images?.[0], "products")}
+                    alt={item.product.name}
+                    style={{ width: 80, height: 80, objectFit: "cover", borderRadius: 8, border: "1px solid #f3f4f6" }}
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      if (target.src.endsWith("/placeholder.jpg")) return;
+                      target.src = "/placeholder.jpg";
+                    }}
+                  />
                 </Link>
 
                 {/* Info — takes remaining space, min-width:0 prevents overflow */}

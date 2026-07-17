@@ -23,16 +23,17 @@ export default function ProductCard({ product }: ProductCardProps) {
   return (
     <div className="product-card" onClick={() => navigate(`/products/${product.slug}`)}>
       <div className="product-card-img-wrap">
-        {product.images?.[0] ? (
-          <img
-            src={getImageUrl(product.images[0], "products")}
-            alt={product.name}
-            className="product-card-img"
-            loading="lazy"
-          />
-        ) : (
-          <div className="product-card-placeholder">🎆</div>
-        )}
+        <img
+          src={getImageUrl(product.images?.[0], "products")}
+          alt={product.name}
+          className="product-card-img"
+          loading="lazy"
+          onError={(e) => {
+            const target = e.target as HTMLImageElement;
+            if (target.src.endsWith("/placeholder.jpg")) return;
+            target.src = "/placeholder.jpg";
+          }}
+        />
         {product.discountPercentage > 0 && (
           <span className="discount-badge">{product.discountPercentage}% OFF</span>
         )}

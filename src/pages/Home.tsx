@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { ChevronRight, Zap } from "lucide-react";
+import { ChevronRight, Zap, Trophy, Users, ShieldCheck, Truck, CheckCircle, Lock, Tag, Sparkles, PackageOpen } from "lucide-react";
 import { getBanners, type Banner } from "../api/banners";
 import { getCategories, type Category } from "../api/categories";
 import { getFeaturedProducts, getProducts, type Product } from "../api/products";
@@ -50,13 +50,13 @@ export default function Home() {
         <div className="container">
           <div className="promo-strip-inner">
             {[
-              { icon: "🚚", text: "FREE Delivery on ₹500+" },
-              { icon: "✅", text: "100% Authentic" },
-              { icon: "🔒", text: "Safety Certified" },
-              { icon: "🎆", text: "Factory Price" },
+              { icon: <Truck size={20} />, text: "FREE Delivery on ₹500+" },
+              { icon: <CheckCircle size={20} />, text: "100% Authentic" },
+              { icon: <Lock size={20} />, text: "Safety Certified" },
+              { icon: <Tag size={20} />, text: "Factory Price" },
             ].map((item) => (
               <div key={item.text} className="promo-item">
-                <span className="promo-item-icon">{item.icon}</span>
+                <span className="promo-item-icon" style={{ display: 'flex', alignItems: 'center' }}>{item.icon}</span>
                 {item.text}
               </div>
             ))}
@@ -92,7 +92,7 @@ export default function Home() {
 
       {/* Deal Banner */}
       <div className="deal-banner">
-        <div style={{ fontSize: "2rem", marginBottom: 8 }}>🎆🎇✨</div>
+        <div style={{ marginBottom: 12, display: 'flex', justifyContent: 'center' }}><Sparkles size={40} color="#f97316" /></div>
         <h2>Diwali Mega Sale is LIVE!</h2>
         <p>Up to 60% off on all premium crackers. Limited stock!</p>
         <Link to="/products" className="deal-btn">Shop Now →</Link>
@@ -111,7 +111,7 @@ export default function Home() {
             <ProductsGridSkeleton count={8} />
           ) : newArrivals.length === 0 ? (
             <div className="empty-state">
-              <div className="empty-icon">🎆</div>
+              <div className="empty-icon"><PackageOpen size={48} /></div>
               <div className="empty-title">No products yet</div>
               <p className="empty-sub">Products will appear here once added.</p>
             </div>
@@ -130,13 +130,13 @@ export default function Home() {
         <div className="container">
           <div className="trust-grid">
             {[
-              { icon: "🏆", title: "30+ Years Experience", desc: "Trusted retailer since 1995" },
-              { icon: "🌟", title: "10,000+ Customers", desc: "Celebrating across India" },
-              { icon: "🛡️", title: "Safety Certified", desc: "IS:9766 certified products" },
-              { icon: "📦", title: "Pan India Delivery", desc: "All major cities covered" },
+              { icon: <Trophy size={28} strokeWidth={1.8} />, title: "30+ Years Experience", desc: "Trusted retailer since 1995" },
+              { icon: <Users size={28} strokeWidth={1.8} />, title: "10,000+ Customers", desc: "Celebrating across India" },
+              { icon: <ShieldCheck size={28} strokeWidth={1.8} />, title: "Safety Certified", desc: "IS:9766 certified products" },
+              { icon: <Truck size={28} strokeWidth={1.8} />, title: "Pan India Delivery", desc: "All major cities covered" },
             ].map((b) => (
-              <div key={b.title} className="trust-card">
-                <span className="trust-icon">{b.icon}</span>
+              <div key={b.title} className="trust-card" style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+                <span className="trust-icon" style={{ color: "var(--primary)", display: "flex", alignItems: "center", justifyContent: "center" }}>{b.icon}</span>
                 <div>
                   <div className="trust-title">{b.title}</div>
                   <div className="trust-desc">{b.desc}</div>

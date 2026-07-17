@@ -9,26 +9,33 @@ import CategoryStrip from "../components/CategoryStrip";
 import { ProductsGridSkeleton } from "../components/Skeleton";
 
 export default function Products() {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [page, setPage] = useState(1);
   const [filterOpen, setFilterOpen] = useState(false);
   const LIMIT = 20;
 
   const searchQuery = searchParams.get("search") || "";
-  const [category, setCategory] = useState(searchParams.get("category") || "");
-  const [sort, setSort] = useState(searchParams.get("sort") || "newest");
-  const [minPrice, setMinPrice] = useState("");
-  const [maxPrice, setMaxPrice] = useState("");
+  const category = searchParams.get("category") || "";
+  const sort = searchParams.get("sort") || "newest";
+  const minPrice = searchParams.get("minPrice") || "";
+  const maxPrice = searchParams.get("maxPrice") || "";
+  const page = parseInt(searchParams.get("page") || "1") || 1;
+
+  const setPage = (p: number | ((prev: number) => number)) => {
+    const nextVal = typeof p === "function" ? p(page) : p;
+    const newParams = new URLSearchParams(searchParams);
+    newParams.set("page", String(nextVal));
+    setSearchParams(newParams);
+  };
 
   useEffect(() => {
     getCategories().then((r) => setCategories(r.result || []));
   }, []);
 
-  // Reset page when params change
+  // Reset page when search query changes
   useEffect(() => { setPage(1); }, [searchQuery]);
 
   const loadProducts = useCallback(async () => {
@@ -53,9 +60,47 @@ export default function Products() {
 
   const totalPages = Math.ceil(total / LIMIT);
 
-  const handleCategoryChange = (id: string) => { setCategory(id); setPage(1); };
-  const handleSortChange = (s: string) => { setSort(s); setPage(1); };
-  const handlePriceChange = (min: string, max: string) => { setMinPrice(min); setMaxPrice(max); setPage(1); };
+  const handleCategoryChange = (slug: string) => {
+    const newParams = new URLSearchParams(searchParams);
+    if (slug) {
+      newParams.set("category", slug);
+    } else {
+      newParams.delete("category");
+    }
+    newParams.set("page", "1");
+    setSearchParams(newParams);
+  };
+
+  const handleSortChange = (s: string) => {
+    const newParams = new URLSearchParams(searchParams);
+    if (s) {
+      newParams.set("sort", s);
+    } else {
+      newParams.delete("sort");
+    }
+    newParams.set("page", "1");
+    setSearchParams(newParams);
+  };
+
+  const handlePriceChange = (min: string, max: string) => {
+    const newParams = new URLSearchParams(searchParams);
+    if (min) newParams.set("minPrice", min);
+    else newParams.delete("minPrice");
+
+    if (max) newParams.set("maxPrice", max);
+    else newParams.delete("maxPrice");
+
+    newParams.set("page", "1");
+    setSearchParams(newParams);
+  };
+
+  const handleClearAll = () => {
+    const newParams = new URLSearchParams();
+    if (searchQuery) {
+      newParams.set("search", searchQuery);
+    }
+    setSearchParams(newParams);
+  };
 
   return (
     <main style={{ minHeight: "80vh" }}>
@@ -135,7 +180,7 @@ export default function Products() {
                 <p className="empty-sub">Try adjusting your filters or search term</p>
                 <button
                   className="empty-btn"
-                  onClick={() => { setCategory(""); setMinPrice(""); setMaxPrice(""); setSort("newest"); setPage(1); }}
+                  onClick={handleClearAll}
                 >
                   Clear Filters
                 </button>

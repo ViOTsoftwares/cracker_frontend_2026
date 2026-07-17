@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
 import type { Banner } from "../api/banners";
 import { getImageUrl } from "../utils/imageHelper";
 
@@ -29,7 +29,7 @@ export default function BannerSlider({ banners }: BannerSliderProps) {
   if (!banners.length) {
     return (
       <div className="banner-slider" style={{ background: "linear-gradient(135deg,#1e3a5f,#f97316)", height: 360, display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: 16 }}>
-        <div style={{ fontSize: 72 }}>🎆</div>
+        <div><Sparkles size={72} color="#fff" /></div>
         <h2 style={{ color: "#fff", fontSize: "2rem", fontWeight: 800, textAlign: "center" }}>Festival of Lights Sale</h2>
         <p style={{ color: "rgba(255,255,255,.8)", fontSize: "1.1rem" }}>Best crackers at the best prices!</p>
       </div>
@@ -59,10 +59,10 @@ export default function BannerSlider({ banners }: BannerSliderProps) {
       {banners.length > 1 && (
         <>
           <button className="banner-arrow prev" onClick={() => { prev(); resetTimer(); }}>
-            <ChevronLeft size={20} />
+            <ChevronLeft />
           </button>
           <button className="banner-arrow next" onClick={() => { next(); resetTimer(); }}>
-            <ChevronRight size={20} />
+            <ChevronRight />
           </button>
           <div className="banner-dots">
             {banners.map((_, idx) => (

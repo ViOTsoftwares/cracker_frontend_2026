@@ -148,7 +148,7 @@ export default function ProductDetail() {
           {product.category && (
             <>
               <span className="breadcrumb-sep">›</span>
-              <Link to={`/products?category=${product.category._id}`}>{product.category.name}</Link>
+              <Link to={`/products?category=${product.category.slug}`}>{product.category.name}</Link>
             </>
           )}
           <span className="breadcrumb-sep">›</span>
@@ -159,13 +159,15 @@ export default function ProductDetail() {
           {/* Image Gallery */}
           <div className="detail-img-gallery">
             <div className="gallery-main">
-              {product.images?.[activeImg] ? (
-                <img src={getImageUrl(product.images[activeImg], "products")} alt={product.name} />
-              ) : (
-                <div style={{ fontSize: 96, display: "flex", alignItems: "center", justifyContent: "center", width: "100%", height: "100%", background: "#fff7ed" }}>
-                  🎆
-                </div>
-              )}
+              <img
+                src={getImageUrl(product.images?.[activeImg], "products")}
+                alt={product.name}
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  if (target.src.endsWith("/placeholder.jpg")) return;
+                  target.src = "/placeholder.jpg";
+                }}
+              />
             </div>
             {product.images.length > 1 && (
               <div className="gallery-thumbs">

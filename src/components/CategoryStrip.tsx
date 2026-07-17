@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { Sparkles, Rocket, Flower2, Bomb, Loader, Aperture, Gift, Smile, Volume2, Flame } from "lucide-react";
 import type { Category } from "../api/categories";
 import { getImageUrl } from "../utils/imageHelper";
 
@@ -8,26 +9,44 @@ interface CategoryStripProps {
   onSelect?: (id: string) => void;
 }
 
-const EMOJI_MAP: Record<string, string> = {
-  sparklers: "✨", rockets: "🚀", "flower pots": "🌸", bombs: "💣",
-  "ground chakkar": "🌀", "aerial shots": "🎆", "fancy crackers": "🎇",
-  "gift boxes": "🎁", "kids special": "🧒", "sound crackers": "🔊",
+const getCategoryIcon = (name: string) => {
+  const n = name.toLowerCase();
+  if (n.includes("sparkler")) return <Sparkles size={24} color="#f97316" />;
+  if (n.includes("rocket")) return <Rocket size={24} color="#f97316" />;
+  if (n.includes("flower pot")) return <Flower2 size={24} color="#f97316" />;
+  if (n.includes("bomb")) return <Bomb size={24} color="#f97316" />;
+  if (n.includes("chakkar")) return <Loader size={24} color="#f97316" />;
+  if (n.includes("aerial")) return <Aperture size={24} color="#f97316" />;
+  if (n.includes("fancy")) return <Sparkles size={24} color="#f97316" />;
+  if (n.includes("gift")) return <Gift size={24} color="#f97316" />;
+  if (n.includes("kid")) return <Smile size={24} color="#f97316" />;
+  if (n.includes("sound")) return <Volume2 size={24} color="#f97316" />;
+  return <Flame size={24} color="#f97316" />;
 };
 
 export default function CategoryStrip({ categories, selected, onSelect }: CategoryStripProps) {
   const navigate = useNavigate();
 
-  const allCategory = { _id: "", name: "All", slug: "", image: "" };
-  const allCats = [allCategory, ...categories];
+  const existingAllCat = categories.find((c) => c.name.toLowerCase() === "all" || c.slug === "all");
+  
+  const allCategory: Category = { 
+    _id: existingAllCat?._id || "", 
+    name: "All", 
+    slug: "", 
+    description: existingAllCat?.description || "",
+    image: existingAllCat?.image || "" 
+  };
+  
+  const filteredCategories = categories.filter((c) => c.name.toLowerCase() !== "all" && c.slug !== "all");
+  const allCats = [allCategory, ...filteredCategories];
 
-  const getEmoji = (name: string) =>
-    EMOJI_MAP[name.toLowerCase()] || "🎇";
 
-  const handleClick = (cat: typeof allCategory) => {
+
+  const handleClick = (cat: Category) => {
     if (onSelect) {
-      onSelect(cat._id);
+      onSelect(cat.slug);
     } else {
-      if (cat._id) navigate(`/products?category=${cat._id}`);
+      if (cat.slug) navigate(`/products?category=${cat.slug}`);
       else navigate("/products");
     }
   };
@@ -39,13 +58,15 @@ export default function CategoryStrip({ categories, selected, onSelect }: Catego
           {allCats.map((cat) => (
             <button
               key={cat._id || "all"}
-              className={`category-chip ${selected === cat._id ? "active" : ""}`}
+              className={`category-chip ${selected === cat.slug ? "active" : ""}`}
               onClick={() => handleClick(cat)}
             >
               {cat.image ? (
                 <img src={getImageUrl(cat.image, "categories")} alt={cat.name} className="category-chip-img" />
               ) : (
-                <div className="category-chip-placeholder">{getEmoji(cat.name)}</div>
+                <div className="category-chip-placeholder" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  {getCategoryIcon(cat.name)}
+                </div>
               )}
               <span className="category-chip-name">{cat.name}</span>
             </button>

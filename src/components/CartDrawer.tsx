@@ -53,15 +53,16 @@ export default function CartDrawer({ onClose }: CartDrawerProps) {
           ) : (
             items.map((item) => (
               <div key={item.product._id} className="cart-item">
-                {item.product.images?.[0] ? (
-                  <img
-                    src={getImageUrl(item.product.images[0], "products")}
-                    alt={item.product.name}
-                    className="cart-item-img"
-                  />
-                ) : (
-                  <div className="cart-item-img-placeholder">🎆</div>
-                )}
+                <img
+                  src={getImageUrl(item.product.images?.[0], "products")}
+                  alt={item.product.name}
+                  className="cart-item-img"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    if (target.src.endsWith("/placeholder.jpg")) return;
+                    target.src = "/placeholder.jpg";
+                  }}
+                />
 
                 <div className="cart-item-info">
                   <div className="cart-item-name">{item.product.name}</div>

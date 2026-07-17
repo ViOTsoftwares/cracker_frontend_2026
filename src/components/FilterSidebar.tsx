@@ -70,8 +70,8 @@ export default function FilterSidebar({
           <label key={cat._id} className="filter-option">
             <input
               type="checkbox"
-              checked={selectedCategory === cat._id}
-              onChange={() => onCategoryChange(cat._id === selectedCategory ? "" : cat._id)}
+              checked={selectedCategory === cat.slug}
+              onChange={() => onCategoryChange(cat.slug === selectedCategory ? "" : cat.slug)}
             />
             {cat.name}
           </label>
