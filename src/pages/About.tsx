@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useSettings } from "../context/SettingsContext";
 import { Shield, Target, Award, Users, Flame } from "lucide-react";
 import { Link } from "react-router-dom";
