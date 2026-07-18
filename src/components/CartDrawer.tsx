@@ -108,10 +108,7 @@ export default function CartDrawer({ onClose }: CartDrawerProps) {
                   <span>₹{savings.toLocaleString()}</span>
                 </div>
               )}
-              <div className="cart-summary-row">
-                <span>Delivery</span>
-                <span style={{ color: "#10b981", fontWeight: 600 }}>FREE</span>
-              </div>
+
               <div className="cart-summary-row total">
                 <span>Total</span>
                 <span>₹{totalPrice.toLocaleString()}</span>

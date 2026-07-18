@@ -19,6 +19,7 @@ import Login from "./pages/Login";
 import Profile from "./pages/Profile";
 import Checkout from "./pages/Checkout";
 import HelpPage from "./pages/HelpPage";
+import About from "./pages/About";
 
 function AppContent() {
   const dispatch = useAppDispatch();
@@ -55,6 +56,7 @@ function AppContent() {
         <Route path="/login" element={<Login />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/checkout" element={<Checkout />} />
+        <Route path="/about" element={<About />} />
         <Route path="/page/:identifier" element={<HelpPage />} />
         {/* 404 */}
         <Route

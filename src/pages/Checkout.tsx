@@ -53,7 +53,13 @@ export default function Checkout() {
   }
 
   const selectedAddress = user.addresses.find((a: any) => a._id === selectedAddressId);
-  const deliveryFee = settings?.deliveryFee || 0;
+  let deliveryFee = 0;
+  if (settings?.deliveryFeeType === "fixed") {
+    deliveryFee = settings.deliveryFee || 0;
+  } else if (settings?.deliveryFeeType === "percentage") {
+    deliveryFee = (totalPrice * (settings.deliveryFee || 0)) / 100;
+  }
+
   const grandTotal = totalPrice + deliveryFee;
 
   const handleAddAddress = async (e: React.FormEvent) => {
@@ -275,12 +281,19 @@ export default function Checkout() {
                   <span>Subtotal</span>
                   <span>₹{totalPrice.toLocaleString("en-IN")}</span>
                 </div>
-                <div className="co-price-row">
-                  <span>Delivery</span>
+                <div className="co-price-row" style={{ alignItems: "center" }}>
+                  <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                    Delivery Fee
+                    {settings?.deliveryFeeType === "percentage" && (
+                      <span style={{ fontSize: "0.7rem", background: "#f3f4f6", color: "#6b7280", padding: "2px 6px", borderRadius: 4 }}>
+                        ({settings.deliveryFee}%)
+                      </span>
+                    )}
+                  </span>
                   {deliveryFee > 0 ? (
-                    <span>₹{deliveryFee.toLocaleString("en-IN")}</span>
+                    <span style={{ fontWeight: 600, color: "#1f2937" }}>₹{deliveryFee.toLocaleString("en-IN")}</span>
                   ) : (
-                    <span className="co-free-tag">FREE</span>
+                    <span className="co-free-tag" style={{ background: "#dcfce7", color: "#166534", padding: "2px 8px", borderRadius: 12, fontSize: "0.75rem", fontWeight: 700, letterSpacing: "0.02em" }}>FREE</span>
                   )}
                 </div>
               </div>

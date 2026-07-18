@@ -15,6 +15,7 @@ export interface Setting {
   instagramlink?: string;
   facebooklink?: string;
   deliveryFee?: number;
+  deliveryFeeType?: string;
 }
 
 export interface SettingsState {
@@ -32,6 +33,7 @@ export const defaultSettings: Setting = {
   address: "Sivakasi, Tamil Nadu",
   logo: "",
   deliveryFee: 0,
+  deliveryFeeType: "free",
 };
 
 const initialState: SettingsState = {

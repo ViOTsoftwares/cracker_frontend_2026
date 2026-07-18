@@ -72,7 +72,7 @@ export default function Footer() {
           <div>
             <div className="footer-col-title">Company</div>
             <div className="footer-links">
-              <a href="#">About Us</a>
+              <Link to="/about">About Us</Link>
               <a href="#">Safety Guidelines</a>
               <a href="#">Bulk Orders</a>
               <a href="#">Careers</a>

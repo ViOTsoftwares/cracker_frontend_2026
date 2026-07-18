@@ -1,7 +1,8 @@
 import { Link, useNavigate } from "react-router-dom";
-import { Minus, Plus, Trash2, ShoppingCart, ArrowLeft, ArrowRight } from "lucide-react";
+import { Minus, Plus, Trash2, ShoppingCart, ArrowLeft, ArrowRight, Truck } from "lucide-react";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
+import { useSettings } from "../context/SettingsContext";
 import toast from "react-hot-toast";
 import { getImageUrl } from "../utils/imageHelper";
 
@@ -9,11 +10,21 @@ export default function Cart() {
   const { items, totalItems, totalPrice, removeFromCart, increment, decrement, clearCart } = useCart();
   const navigate = useNavigate();
   const { token } = useAuth();
+  const { settings } = useSettings();
 
   const savings = items.reduce(
     (sum, i) => sum + (i.product.originalPrice - i.product.offerPrice) * i.quantity,
     0
   );
+
+  let deliveryFee = 0;
+  if (settings?.deliveryFeeType === "fixed") {
+    deliveryFee = settings.deliveryFee || 0;
+  } else if (settings?.deliveryFeeType === "percentage") {
+    deliveryFee = (totalPrice * (settings.deliveryFee || 0)) / 100;
+  }
+
+  const grandTotal = totalPrice + deliveryFee;
 
   if (items.length === 0) {
     return (
@@ -156,13 +167,27 @@ export default function Cart() {
                   <span>-₹{savings.toLocaleString()}</span>
                 </div>
               )}
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.88rem", color: "#6b7280" }}>
-                <span>Delivery</span>
-                <span style={{ color: "#10b981", fontWeight: 600 }}>FREE</span>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "0.88rem", color: "#4b5563" }}>
+                <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                  <Truck size={14} style={{ color: "#9ca3af" }} />
+                  Delivery Fee
+                  {settings?.deliveryFeeType === "percentage" && (
+                    <span style={{ fontSize: "0.7rem", background: "#f3f4f6", padding: "2px 6px", borderRadius: 4, marginLeft: 4 }}>
+                      ({settings.deliveryFee}%)
+                    </span>
+                  )}
+                </span>
+                {deliveryFee > 0 ? (
+                  <span style={{ fontWeight: 600, color: "#1f2937" }}>₹{deliveryFee.toLocaleString("en-IN")}</span>
+                ) : (
+                  <span style={{ background: "#dcfce7", color: "#166534", padding: "2px 8px", borderRadius: 12, fontSize: "0.75rem", fontWeight: 700, letterSpacing: "0.02em" }}>
+                    FREE
+                  </span>
+                )}
               </div>
               <div style={{ display: "flex", justifyContent: "space-between", fontSize: "1.05rem", fontWeight: 700, paddingTop: 14, borderTop: "1px solid #e5e7eb" }}>
                 <span>Total</span>
-                <span>₹{totalPrice.toLocaleString()}</span>
+                <span>₹{grandTotal.toLocaleString("en-IN")}</span>
               </div>
             </div>
 
