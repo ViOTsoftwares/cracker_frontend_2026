@@ -40,8 +40,8 @@ export const useAuth = () => {
     return verifyOTPAction.fulfilled.match(result);
   }, [dispatch]);
 
-  const googleLogin = useCallback(async (idToken: string): Promise<boolean> => {
-    const result = await dispatch(googleLoginAction(idToken));
+  const googleLogin = useCallback(async (payload: { idToken?: string; accessToken?: string }): Promise<boolean> => {
+    const result = await dispatch(googleLoginAction(payload));
     return googleLoginAction.fulfilled.match(result);
   }, [dispatch]);
 

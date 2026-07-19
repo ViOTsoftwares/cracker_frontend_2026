@@ -152,9 +152,9 @@ export const verifyOTP = createAsyncThunk(
 
 export const googleLogin = createAsyncThunk(
   "auth/googleLogin",
-  async (idToken: string, { rejectWithValue }) => {
+  async (payload: { idToken?: string; accessToken?: string }, { rejectWithValue }) => {
     try {
-      const { data } = await userAPI.post("/auth/google", { idToken });
+      const { data } = await userAPI.post("/auth/google", payload);
       if (data.success) {
         localStorage.setItem("userToken", data.token);
         toast.success("Successfully signed in with Google! 🚀");

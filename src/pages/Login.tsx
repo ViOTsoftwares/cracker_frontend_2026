@@ -37,44 +37,27 @@ export default function Login() {
     }
   }, [timer]);
 
-  // Initialize Google Sign-In SDK dynamically
-  useEffect(() => {
-    const initGoogle = () => {
-      if (window.google?.accounts?.id && ENV.GOOGLE_CLIENT_ID) {
-        try {
-          window.google.accounts.id.initialize({
-            client_id: ENV.GOOGLE_CLIENT_ID,
-            callback: async (response: any) => {
-              setLoading(true);
-              const success = await googleLogin(response.credential);
-              setLoading(false);
-              if (success) {
-                navigate(redirectPath);
-              }
-            },
-          });
-          window.google.accounts.id.renderButton(
-            document.getElementById("google-signin-btn"),
-            { theme: "outline", size: "large", width: 320 }
-          );
-        } catch (err) {
-          console.error("Google login button render error:", err);
-        }
-      }
-    };
-
-    initGoogle();
-
-    // Check periodically if SDK loads asynchronously
-    const interval = setInterval(() => {
-      if (window.google?.accounts?.id) {
-        initGoogle();
-        clearInterval(interval);
-      }
-    }, 500);
-
-    return () => clearInterval(interval);
-  }, [googleLogin, navigate, redirectPath]);
+  const handleGoogleLogin = () => {
+    if (window.google?.accounts?.oauth2 && ENV.GOOGLE_CLIENT_ID) {
+      const client = window.google.accounts.oauth2.initTokenClient({
+        client_id: ENV.GOOGLE_CLIENT_ID,
+        scope: "email profile",
+        callback: async (response: any) => {
+          if (response.access_token) {
+            setLoading(true);
+            const success = await googleLogin({ accessToken: response.access_token });
+            setLoading(false);
+            if (success) {
+              navigate(redirectPath);
+            }
+          }
+        },
+      });
+      client.requestAccessToken();
+    } else {
+      console.error("Google SDK not loaded properly");
+    }
+  };
 
   const handleSendOtp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -204,7 +187,15 @@ export default function Login() {
             </div>
 
             <div className="google-btn-container">
-              <div id="google-signin-btn" className="google-render-btn" />
+              <button 
+                type="button" 
+                className="google-custom-btn" 
+                onClick={handleGoogleLogin}
+                disabled={loading}
+              >
+                <img src="https://www.google.com/favicon.ico" alt="Google Logo" className="google-btn-icon" />
+                Sign in with Google
+              </button>
             </div>
           </div>
         )}

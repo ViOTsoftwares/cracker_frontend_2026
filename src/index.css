@@ -3762,3 +3762,32 @@ button { cursor: pointer; font-family: inherit; border: none; background: none; 
 
 .page-btn.dots { pointer-events: none; opacity: 0.7; background: transparent; border: none; font-weight: bold; }
 
+.google-custom-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  max-width: 320px;
+  margin: 0 auto;
+  height: 44px;
+  background: #fff;
+  border: 1px solid #dadce0;
+  border-radius: 4px;
+  font-family: 'Roboto', 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: #3c4043;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+
+.google-custom-btn:hover {
+  background: #f8f9fa;
+  box-shadow: 0 1px 2px 0 rgba(60,64,67,0.3), 0 1px 3px 1px rgba(60,64,67,0.15);
+}
+
+.google-btn-icon {
+  width: 18px;
+  height: 18px;
+}
