@@ -7,6 +7,7 @@ import ProductCard from "../components/ProductCard";
 import FilterSidebar from "../components/FilterSidebar";
 import CategoryStrip from "../components/CategoryStrip";
 import { ProductsGridSkeleton } from "../components/Skeleton";
+import SEO from "../components/SEO";
 
 export default function Products() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -60,6 +61,29 @@ export default function Products() {
 
   const totalPages = Math.ceil(total / LIMIT);
 
+  const getPageNumbers = () => {
+    const pages = [];
+    if (totalPages <= 7) {
+      for (let i = 1; i <= totalPages; i++) pages.push(i);
+    } else {
+      if (page <= 4) {
+        for (let i = 1; i <= 5; i++) pages.push(i);
+        pages.push("...");
+        pages.push(totalPages);
+      } else if (page >= totalPages - 3) {
+        pages.push(1);
+        pages.push("...");
+        for (let i = totalPages - 4; i <= totalPages; i++) pages.push(i);
+      } else {
+        pages.push(1);
+        pages.push("...");
+        for (let i = page - 1; i <= page + 1; i++) pages.push(i);
+        pages.push("...");
+        pages.push(totalPages);
+      }
+    }
+    return pages;
+  };
   const handleCategoryChange = (slug: string) => {
     const newParams = new URLSearchParams(searchParams);
     if (slug) {
@@ -104,6 +128,10 @@ export default function Products() {
 
   return (
     <main style={{ minHeight: "80vh" }}>
+      <SEO 
+        title={category && category !== "all" ? `${categories.find(c => c.slug === category)?.name || "Products"}` : "All Products"} 
+        description="Browse our wide selection of premium crackers for all occasions."
+      />
       {/* Category strip */}
       <CategoryStrip categories={categories} selected={category} onSelect={handleCategoryChange} />
 
@@ -195,11 +223,12 @@ export default function Products() {
                 {totalPages > 1 && (
                   <div className="pagination">
                     <button className="page-btn" disabled={page === 1} onClick={() => setPage((p) => p - 1)}>‹</button>
-                    {Array.from({ length: Math.min(totalPages, 7) }, (_, i) => i + 1).map((p) => (
+                    {getPageNumbers().map((p, index) => (
                       <button
-                        key={p}
-                        className={`page-btn ${page === p ? "active" : ""}`}
-                        onClick={() => setPage(p)}
+                        key={index}
+                        className={`page-btn ${page === p ? "active" : ""} ${p === "..." ? "dots" : ""}`}
+                        disabled={p === "..."}
+                        onClick={() => p !== "..." && setPage(p as number)}
                       >{p}</button>
                     ))}
                     <button className="page-btn" disabled={page === totalPages} onClick={() => setPage((p) => p + 1)}>›</button>

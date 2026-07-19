@@ -60,11 +60,16 @@ export default function Footer() {
           <div>
             <div className="footer-col-title">Shop</div>
             <div className="footer-links">
-              <Link to="/products">All Products</Link>
-              <Link to="/products?search=sparklers">Sparklers</Link>
-              <Link to="/products?search=rockets">Rockets</Link>
-              <Link to="/products?search=aerial">Aerial Shots</Link>
-              <Link to="/products?search=gift">Gift Boxes</Link>
+              {settings.footerShopLinks && settings.footerShopLinks.length > 0 ? (
+                settings.footerShopLinks.map((link, index) => (
+                  <Link key={index} to={link.link}>{link.label}</Link>
+                ))
+              ) : (
+                <>
+                  <Link to="/products">All Products</Link>
+                  <Link to="/products?search=sparklers">Sparklers</Link>
+                </>
+              )}
             </div>
           </div>
 
@@ -74,8 +79,6 @@ export default function Footer() {
             <div className="footer-links">
               <Link to="/about">About Us</Link>
               <a href="#">Safety Guidelines</a>
-              <a href="#">Bulk Orders</a>
-              <a href="#">Careers</a>
             </div>
           </div>
 

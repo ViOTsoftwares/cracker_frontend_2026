@@ -58,7 +58,7 @@ export default function CategoryStrip({ categories, selected, onSelect }: Catego
           {allCats.map((cat) => (
             <button
               key={cat._id || "all"}
-              className={`category-chip ${selected === cat.slug ? "active" : ""}`}
+              className={`category-chip ${selected === cat.slug || (cat.slug === "" && selected === "all") ? "active" : ""}`}
               onClick={() => handleClick(cat)}
             >
               {cat.image ? (

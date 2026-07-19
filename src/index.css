@@ -3759,3 +3759,6 @@ button { cursor: pointer; font-family: inherit; border: none; background: none; 
 }
 
 
+
+.page-btn.dots { pointer-events: none; opacity: 0.7; background: transparent; border: none; font-weight: bold; }
+

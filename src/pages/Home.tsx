@@ -8,6 +8,7 @@ import BannerSlider from "../components/BannerSlider";
 import CategoryStrip from "../components/CategoryStrip";
 import ProductCard from "../components/ProductCard";
 import { BannerSkeleton, ProductsGridSkeleton } from "../components/Skeleton";
+import SEO from "../components/SEO";
 
 export default function Home() {
   const [banners, setBanners] = useState<Banner[]>([]);
@@ -37,6 +38,7 @@ export default function Home() {
 
   return (
     <main>
+      <SEO title="Home" />
       {/* Banner Slider */}
       <div className="banner-section">
         {loadingBanners ? <BannerSkeleton /> : <BannerSlider banners={banners} />}

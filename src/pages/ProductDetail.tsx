@@ -7,6 +7,7 @@ import ProductCard from "../components/ProductCard";
 import toast from "react-hot-toast";
 import { useSettings } from "../context/SettingsContext";
 import { getImageUrl } from "../utils/imageHelper";
+import SEO from "../components/SEO";
 
 export default function ProductDetail() {
   const { slug } = useParams<{ slug: string }>();
@@ -139,6 +140,11 @@ export default function ProductDetail() {
 
   return (
     <main>
+      <SEO 
+        title={product.name} 
+        description={product.notes?.substring(0, 160)} 
+        image={product.images?.[0] ? getImageUrl(product.images[0], "products") : undefined}
+      />
       <div className="container" style={{ paddingTop: 16, paddingBottom: 48 }}>
         {/* Breadcrumb */}
         <div className="breadcrumb">

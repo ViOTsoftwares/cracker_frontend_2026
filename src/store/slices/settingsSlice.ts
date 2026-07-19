@@ -16,6 +16,7 @@ export interface Setting {
   facebooklink?: string;
   deliveryFee?: number;
   deliveryFeeType?: string;
+  footerShopLinks?: { label: string; link: string }[];
 }
 
 export interface SettingsState {
@@ -34,6 +35,13 @@ export const defaultSettings: Setting = {
   logo: "",
   deliveryFee: 0,
   deliveryFeeType: "free",
+  footerShopLinks: [
+    { label: "All Products", link: "/products" },
+    { label: "Sparklers", link: "/products?search=sparklers" },
+    { label: "Rockets", link: "/products?search=rockets" },
+    { label: "Aerial Shots", link: "/products?search=aerial" },
+    { label: "Gift Boxes", link: "/products?search=gift" },
+  ],
 };
 
 const initialState: SettingsState = {
