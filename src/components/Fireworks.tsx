@@ -4,7 +4,7 @@ import { Rocket } from 'lucide-react';
 const Fireworks: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef<number | null>(null);
 
   const triggerFireworks = useCallback(() => {
     setIsPlaying(true);
