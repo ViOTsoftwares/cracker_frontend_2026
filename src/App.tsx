@@ -11,6 +11,7 @@ import { getImageUrl } from "./utils/imageHelper";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import ScrollToTop from "./components/ScrollToTop";
+import Fireworks from "./components/Fireworks";
 import Home from "./pages/Home";
 import Products from "./pages/Products";
 import ProductDetail from "./pages/ProductDetail";
@@ -47,6 +48,7 @@ function AppContent() {
   return (
     <BrowserRouter>
       <ScrollToTop />
+      <Fireworks />
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />

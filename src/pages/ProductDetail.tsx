@@ -191,9 +191,17 @@ export default function ProductDetail() {
           </div>
 
           {/* Product Info */}
-          <div className="detail-info">
+          <div className="detail-info" style={{ position: "relative" }}>
+            <button 
+              className="btn-share" 
+              onClick={handleShare} 
+              title="Share Product"
+              style={{ position: "absolute", top: 0, right: 0 }}
+            >
+              <Share2 size={20} />
+            </button>
             {product.brand && <div className="detail-brand">{product.brand}</div>}
-            <h1 className="detail-name">{product.name}</h1>
+            <h1 className="detail-name" style={{ paddingRight: 40 }}>{product.name}</h1>
 
             {/* Rating */}
             {product.ratings > 0 && (
@@ -267,9 +275,6 @@ export default function ProductDetail() {
                   Out of Stock
                 </button>
               )}
-              <button className="btn-share" onClick={handleShare} title="Share Product">
-                <Share2 size={20} />
-              </button>
             </div>
 
             {/* Delivery info */}
