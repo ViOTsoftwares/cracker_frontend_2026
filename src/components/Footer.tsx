@@ -78,7 +78,7 @@ export default function Footer() {
             <div className="footer-col-title">Company</div>
             <div className="footer-links">
               <Link to="/about">About Us</Link>
-              <a href="#">Safety Guidelines</a>
+              <Link to="/page/SAFETY_GUIDELINES">Safety Guidelines</Link>
             </div>
           </div>
 
