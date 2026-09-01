@@ -10,6 +10,7 @@ export interface Setting {
   phone: string;
   email: string;
   logo: string;
+  favicon?: string;
   xlink?: string;
   linkedinlink?: string;
   instagramlink?: string;
@@ -33,6 +34,7 @@ export const defaultSettings: Setting = {
   email: "info@crackerssiva.com",
   address: "Sivakasi, Tamil Nadu",
   logo: "",
+  favicon: "",
   deliveryFee: 0,
   deliveryFeeType: "free",
   footerShopLinks: [

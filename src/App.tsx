@@ -31,19 +31,19 @@ function AppContent() {
     dispatch(initAuth());
   }, [dispatch]);
 
-  // Update favicon dynamically when site settings logo is loaded
+  // Update favicon dynamically when site settings favicon is loaded
   useEffect(() => {
-    if (settings?.logo) {
-      const logoUrl = getImageUrl(settings.logo, "logos");
-      let link: HTMLLinkElement | null = document.querySelector("link[rel~='icon']");
-      if (!link) {
-        link = document.createElement("link");
-        link.rel = "icon";
-        document.getElementsByTagName("head")[0].appendChild(link);
-      }
-      link.href = logoUrl;
+    const faviconUrl = settings?.favicon
+      ? getImageUrl(settings.favicon, "logos")
+      : "/favicon.png";
+    let link: HTMLLinkElement | null = document.querySelector("link[rel~='icon']");
+    if (!link) {
+      link = document.createElement("link");
+      link.rel = "icon";
+      document.getElementsByTagName("head")[0].appendChild(link);
     }
-  }, [settings?.logo]);
+    link.href = faviconUrl;
+  }, [settings?.favicon]);
 
   return (
     <BrowserRouter>

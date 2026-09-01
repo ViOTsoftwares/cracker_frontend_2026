@@ -17,6 +17,7 @@ export default function Navbar() {
   const [cartOpen, setCartOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
   const navigate = useNavigate();
   const [categories, setCategories] = useState<Category[]>([]);
 
@@ -32,6 +33,16 @@ export default function Navbar() {
       setSearchOpen(false);
       setMenuOpen(false);
     }
+  };
+
+  const handleLogoutClick = () => {
+    setShowLogoutModal(true);
+    setMenuOpen(false);
+  };
+
+  const confirmLogout = () => {
+    setShowLogoutModal(false);
+    logout();
   };
 
   const renderLogoText = (name: string) => {
@@ -110,7 +121,7 @@ export default function Navbar() {
                   />
                   <span>{user.name || user.email.split("@")[0]}</span>
                 </Link>
-                <button onClick={logout} className="nav-btn" title="Logout" style={{ padding: "8px 10px", background: "rgba(239, 68, 68, 0.2)" }}>
+                <button onClick={handleLogoutClick} className="nav-btn" title="Logout" style={{ padding: "8px 10px", background: "rgba(239, 68, 68, 0.2)" }}>
                   <LogOut size={16} />
                 </button>
               </div>
@@ -170,8 +181,6 @@ export default function Navbar() {
           </div>
         )}
 
-
-
         {/* Mobile Menu Drawer */}
         {menuOpen && (
           <div className="mobile-menu">
@@ -203,7 +212,7 @@ export default function Navbar() {
                     <UserIcon size={16} style={{ marginRight: 8 }} /> My Profile
                   </Link>
                   <button
-                    onClick={() => { logout(); setMenuOpen(false); }}
+                    onClick={handleLogoutClick}
                     className="mobile-menu-item"
                     style={{ display: "flex", width: "100%", textAlign: "left", color: "#f87171", alignItems: "center" }}
                   >
@@ -221,6 +230,37 @@ export default function Navbar() {
       </nav>
 
       {cartOpen && <CartDrawer onClose={() => setCartOpen(false)} />}
+
+      {/* Logout Confirmation Modal */}
+      {showLogoutModal && (
+        <div className="logout-modal-overlay" onClick={() => setShowLogoutModal(false)}>
+          <div className="logout-modal-card animate-fade-in" onClick={(e) => e.stopPropagation()}>
+            <div className="logout-modal-icon-circle">
+              <LogOut size={26} color="#ef4444" />
+            </div>
+            <h3>Confirm Logout</h3>
+            <p>Are you sure you want to log out of your account?</p>
+            <div className="logout-modal-actions">
+              <button
+                type="button"
+                className="logout-modal-cancel-btn"
+                onClick={() => setShowLogoutModal(false)}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="logout-modal-confirm-btn"
+                onClick={confirmLogout}
+              >
+                Yes, Log Out
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
+
+

@@ -1,5 +1,7 @@
 import axios from "axios";
 import { ENV } from "../config/env";
+import { store } from "../store";
+import { logout } from "../store/slices/authSlice";
 
 export const baseAPI = axios.create({
   baseURL: ENV.API_URL,
@@ -24,6 +26,21 @@ userAPI.interceptors.request.use(
     return config;
   },
   (error) => {
+    return Promise.reject(error);
+  }
+);
+
+// Response interceptor to immediately log out on 401 / 403 unauthorized
+userAPI.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+      console.warn("[Auth Interceptor] 401/403 Unauthorized detected. Logging out immediately.");
+      store.dispatch(logout());
+      if (typeof window !== "undefined" && !window.location.pathname.startsWith("/login")) {
+        window.location.href = `/login?redirect=${encodeURIComponent(window.location.pathname)}`;
+      }
+    }
     return Promise.reject(error);
   }
 );
