@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ShoppingCart, Search, Flame, Menu, X } from "lucide-react";
+import { ShoppingCart, Search, Flame, Menu, X, ChevronRight } from "lucide-react";
 import { useCart } from "../context/CartContext";
 import { useSettings } from "../context/SettingsContext";
 import { useAuth } from "../context/AuthContext";
@@ -24,6 +24,17 @@ export default function Navbar() {
   useEffect(() => {
     getCategories().then((r) => setCategories(r.result || []));
   }, []);
+
+  useEffect(() => {
+    if (menuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [menuOpen]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -184,14 +195,72 @@ export default function Navbar() {
         {/* Mobile Menu Drawer */}
         {menuOpen && (
           <div className="mobile-menu">
-            <div className="mobile-menu-items">
-              <Link
-                to="/products"
-                className="mobile-menu-item"
+            {/* Top User Card / Login Section */}
+            <div className="mobile-menu-header">
+              {user ? (
+                <div className="mobile-menu-user-card">
+                  <div className="mobile-user-info">
+                    <div className="mobile-user-avatar">
+                      {user.profileImage ? (
+                        <img src={getImageUrl(user.profileImage, "users")} alt="" />
+                      ) : (
+                        <span>{(user.name || user.email || "U")[0].toUpperCase()}</span>
+                      )}
+                    </div>
+                    <div className="mobile-user-details">
+                      <div className="mobile-user-name">{user.name || "My Account"}</div>
+                      <div className="mobile-user-email">{user.email}</div>
+                    </div>
+                  </div>
+                  <div className="mobile-user-actions">
+                    <Link to="/profile" className="mobile-action-pill" onClick={() => setMenuOpen(false)}>
+                      <UserIcon size={14} /> My Profile
+                    </Link>
+                    <button onClick={handleLogoutClick} className="mobile-action-pill logout" type="button">
+                      <LogOut size={14} /> Logout
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="mobile-menu-auth-card">
+                  <div className="mobile-auth-text">
+                    <div className="mobile-auth-title">Welcome!</div>
+                    <div className="mobile-auth-sub">Sign in to track orders & view offers</div>
+                  </div>
+                  <Link to="/login" className="mobile-login-btn" onClick={() => setMenuOpen(false)}>
+                    <UserIcon size={16} /> Login / Sign Up
+                  </Link>
+                </div>
+              )}
+            </div>
+
+            {/* Quick Cart Bar */}
+            <div className="mobile-menu-quick-bar">
+              <Link 
+                to="/cart" 
+                className="mobile-quick-cart-btn" 
                 onClick={() => setMenuOpen(false)}
               >
-                All Products
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <ShoppingCart size={18} />
+                  <span>My Cart</span>
+                </div>
+                <span className="mobile-quick-cart-count">
+                  {totalItems} {totalItems === 1 ? "item" : "items"}
+                </span>
               </Link>
+            </div>
+
+            {/* Category Section Header */}
+            <div className="mobile-menu-section-header">
+              <span>Categories</span>
+              <Link to="/products" onClick={() => setMenuOpen(false)} className="mobile-view-all-link">
+                All Products →
+              </Link>
+            </div>
+
+            {/* Scrollable Categories List */}
+            <div className="mobile-menu-items">
               {categories.map((cat) => (
                 <Link
                   key={cat._id}
@@ -199,31 +268,10 @@ export default function Navbar() {
                   className="mobile-menu-item"
                   onClick={() => setMenuOpen(false)}
                 >
-                  {cat.name}
+                  <span>{cat.name}</span>
+                  <ChevronRight size={15} style={{ opacity: 0.4 }} />
                 </Link>
               ))}
-              <Link to="/cart" className="mobile-menu-item" onClick={() => setMenuOpen(false)}>
-                <ShoppingCart size={16} style={{ marginRight: 8 }} /> My Cart
-                {totalItems > 0 && <span className="cart-badge" style={{ position: "static", marginLeft: 4 }}>{totalItems}</span>}
-              </Link>
-              {user ? (
-                <>
-                  <Link to="/profile" className="mobile-menu-item" onClick={() => setMenuOpen(false)}>
-                    <UserIcon size={16} style={{ marginRight: 8 }} /> My Profile
-                  </Link>
-                  <button
-                    onClick={handleLogoutClick}
-                    className="mobile-menu-item"
-                    style={{ display: "flex", width: "100%", textAlign: "left", color: "#f87171", alignItems: "center" }}
-                  >
-                    <LogOut size={16} style={{ marginRight: 8 }} /> Logout
-                  </button>
-                </>
-              ) : (
-                <Link to="/login" className="mobile-menu-item mobile-menu-cart" onClick={() => setMenuOpen(false)}>
-                  Login
-                </Link>
-              )}
             </div>
           </div>
         )}

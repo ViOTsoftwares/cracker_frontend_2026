@@ -19,6 +19,12 @@ import {
   CheckCircle,
   Truck,
   XCircle,
+  Receipt,
+  Printer,
+  Copy,
+  Check,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { getImageUrl } from "../utils/imageHelper";
 
@@ -70,6 +76,65 @@ export default function Profile() {
   const [loadingOrders, setLoadingOrders] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [orderModalOpen, setOrderModalOpen] = useState(false);
+  const [copiedOrderId, setCopiedOrderId] = useState(false);
+  const [ordersPage, setOrdersPage] = useState(1);
+  const ORDERS_PER_PAGE = 10;
+
+  const totalOrdersPages = Math.ceil(orders.length / ORDERS_PER_PAGE);
+  const paginatedOrders = orders.slice((ordersPage - 1) * ORDERS_PER_PAGE, ordersPage * ORDERS_PER_PAGE);
+
+  const getOrdersPageNumbers = () => {
+    const pages: (number | string)[] = [];
+    if (totalOrdersPages <= 5) {
+      for (let i = 1; i <= totalOrdersPages; i++) pages.push(i);
+    } else {
+      if (ordersPage <= 3) {
+        for (let i = 1; i <= 4; i++) pages.push(i);
+        pages.push("...");
+        pages.push(totalOrdersPages);
+      } else if (ordersPage >= totalOrdersPages - 2) {
+        pages.push(1);
+        pages.push("...");
+        for (let i = totalOrdersPages - 3; i <= totalOrdersPages; i++) pages.push(i);
+      } else {
+        pages.push(1);
+        pages.push("...");
+        for (let i = ordersPage - 1; i <= ordersPage + 1; i++) pages.push(i);
+        pages.push("...");
+        pages.push(totalOrdersPages);
+      }
+    }
+    return pages;
+  };
+
+  const handleOrdersPageChange = (newPage: number) => {
+    setOrdersPage(newPage);
+    const ordersPane = document.getElementById("orders-pane");
+    if (ordersPane) {
+      ordersPane.scrollIntoView({ behavior: "smooth", block: "start" });
+    } else {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
+  // Lock background body scroll when any modal is open
+  useEffect(() => {
+    if (modalOpen || orderModalOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [modalOpen, orderModalOpen]);
+
+  const handleCopyOrderId = (id: string) => {
+    if (!navigator.clipboard) return;
+    navigator.clipboard.writeText(id);
+    setCopiedOrderId(true);
+    setTimeout(() => setCopiedOrderId(false), 2000);
+  };
 
   // Load profile variables
   useEffect(() => {
@@ -418,10 +483,17 @@ export default function Profile() {
 
           {/* TAB 3: ORDERS */}
           {activeTab === "orders" && (
-            <div className="dashboard-pane animate-fade-in">
-              <div className="pane-header">
-                <h2>Order History</h2>
-                <p>View your past order invoices and real-time delivery status.</p>
+            <div id="orders-pane" className="dashboard-pane animate-fade-in">
+              <div className="pane-header orders-pane-header">
+                <div>
+                  <h2>Order History</h2>
+                  <p>View your past order invoices and real-time delivery status.</p>
+                </div>
+                {orders.length > 0 && (
+                  <span className="orders-count-badge">
+                    {orders.length} {orders.length === 1 ? "Order" : "Orders"}
+                  </span>
+                )}
               </div>
 
               {loadingOrders ? (
@@ -430,69 +502,109 @@ export default function Profile() {
                   <div className="skeleton skeleton-line w-full" style={{ height: 100 }} />
                 </div>
               ) : orders.length > 0 ? (
-                <div className="orders-history-list">
-                  {orders.map((ord) => (
-                    <div key={ord._id} className="order-history-card">
-                      <div className="order-history-header">
-                        <div className="order-main-meta">
-                          <span className="order-id-txt">{ord.orderId}</span>
-                          <span className="order-date-txt">
-                            {new Date(ord.createdAt).toLocaleDateString("en-IN", {
-                              day: "numeric",
-                              month: "short",
-                              year: "numeric",
-                            })}
+                <>
+                  <div className="orders-history-list">
+                    {paginatedOrders.map((ord) => (
+                      <div key={ord._id} className="order-history-card">
+                        <div className="order-history-header">
+                          <div className="order-main-meta">
+                            <span className="order-id-txt">{ord.orderId}</span>
+                            <span className="order-date-txt">
+                              {new Date(ord.createdAt).toLocaleDateString("en-IN", {
+                                day: "numeric",
+                                month: "short",
+                                year: "numeric",
+                              })}
+                            </span>
+                          </div>
+                          <div className="order-status-badge-wrap">
+                            {getOrderStatusPill(ord.orderStatus)}
+                          </div>
+                        </div>
+
+                        <div className="order-items-preview-row">
+                          <div className="preview-thumbnails-wrap">
+                            {ord.items.slice(0, 3).map((item, idx) => (
+                              <div key={idx} className="preview-thumb-img">
+                                <img
+                                  src={getImageUrl(item.product?.images?.[0], "products")}
+                                  alt={item.product?.name || "Product"}
+                                  onError={(e) => {
+                                    (e.target as HTMLImageElement).src = "/placeholder.jpg";
+                                  }}
+                                />
+                                <span className="thumb-qty">x{item.quantity}</span>
+                              </div>
+                            ))}
+                            {ord.items.length > 3 && (
+                              <div className="preview-thumb-more">
+                                +{ord.items.length - 3}
+                              </div>
+                            )}
+                          </div>
+
+                          <div className="order-total-block">
+                            <span className="tot-lbl">Total Amount</span>
+                            <span className="tot-val">₹{ord.total.toLocaleString("en-IN")}</span>
+                          </div>
+                        </div>
+
+                        <div className="order-footer-bar">
+                          <span className="payment-method-lbl">
+                            Payment: <strong>{ord.paymentMethod.toUpperCase()}</strong> ({ord.paymentStatus})
                           </span>
-                        </div>
-                        <div className="order-status-badge-wrap">
-                          {getOrderStatusPill(ord.orderStatus)}
-                        </div>
-                      </div>
-
-                      <div className="order-items-preview-row">
-                        <div className="preview-thumbnails-wrap">
-                          {ord.items.slice(0, 3).map((item, idx) => (
-                            <div key={idx} className="preview-thumb-img">
-                              <img
-                                src={getImageUrl(item.product?.images?.[0], "products")}
-                                alt={item.product?.name || "Product"}
-                                onError={(e) => {
-                                  (e.target as HTMLImageElement).src = "/placeholder.jpg";
-                                }}
-                              />
-                              <span className="thumb-qty">x{item.quantity}</span>
-                            </div>
-                          ))}
-                          {ord.items.length > 3 && (
-                            <div className="preview-thumb-more">
-                              +{ord.items.length - 3}
-                            </div>
-                          )}
-                        </div>
-
-                        <div className="order-total-block">
-                          <span className="tot-lbl">Total Amount</span>
-                          <span className="tot-val">₹{ord.total.toLocaleString("en-IN")}</span>
+                          <button
+                            className="view-details-action"
+                            onClick={() => {
+                              setSelectedOrder(ord);
+                              setOrderModalOpen(true);
+                            }}
+                          >
+                            View Details
+                          </button>
                         </div>
                       </div>
+                    ))}
+                  </div>
 
-                      <div className="order-footer-bar">
-                        <span className="payment-method-lbl">
-                          Payment: <strong>{ord.paymentMethod.toUpperCase()}</strong> ({ord.paymentStatus})
-                        </span>
+                  {/* Orders Pagination */}
+                  {totalOrdersPages > 1 && (
+                    <div className="orders-pagination-wrap">
+                      <div className="orders-pagination-info">
+                        Showing {(ordersPage - 1) * ORDERS_PER_PAGE + 1} -{" "}
+                        {Math.min(ordersPage * ORDERS_PER_PAGE, orders.length)} of {orders.length} orders
+                      </div>
+                      <div className="pagination">
                         <button
-                          className="view-details-action"
-                          onClick={() => {
-                            setSelectedOrder(ord);
-                            setOrderModalOpen(true);
-                          }}
+                          className="page-btn prev-btn"
+                          disabled={ordersPage === 1}
+                          onClick={() => handleOrdersPageChange(ordersPage - 1)}
+                          aria-label="Previous Page"
                         >
-                          View Details
+                          <ChevronLeft size={18} />
+                        </button>
+                        {getOrdersPageNumbers().map((p, index) => (
+                          <button
+                            key={index}
+                            className={`page-btn ${ordersPage === p ? "active" : ""} ${p === "..." ? "dots" : ""}`}
+                            disabled={p === "..."}
+                            onClick={() => p !== "..." && handleOrdersPageChange(p as number)}
+                          >
+                            {p}
+                          </button>
+                        ))}
+                        <button
+                          className="page-btn next-btn"
+                          disabled={ordersPage === totalOrdersPages}
+                          onClick={() => handleOrdersPageChange(ordersPage + 1)}
+                          aria-label="Next Page"
+                        >
+                          <ChevronRight size={18} />
                         </button>
                       </div>
                     </div>
-                  ))}
-                </div>
+                  )}
+                </>
               ) : (
                 <div className="empty-address-state">
                   <div className="empty-address-icon">📦</div>
@@ -647,48 +759,99 @@ export default function Profile() {
 
       {/* Order Details Modal */}
       {orderModalOpen && selectedOrder && (
-        <div className="modal-overlay">
-          <div className="modal-card animate-slide-up" style={{ maxWidth: 640 }}>
-            <div className="modal-header">
-              <h3>Order Invoice Details</h3>
-              <button className="modal-close-btn" onClick={() => setOrderModalOpen(false)}>
+        <div className="modal-overlay modal-overlay-invoice" onClick={() => setOrderModalOpen(false)}>
+          <div 
+            className="modal-card modal-invoice-card animate-slide-up" 
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="modal-header modal-invoice-header">
+              <div className="modal-invoice-title-wrap">
+                <div className="modal-invoice-icon-badge">
+                  <Receipt size={20} />
+                </div>
+                <div>
+                  <h3>Order Invoice Details</h3>
+                  <span className="invoice-subtitle">Receipt & Delivery Summary</span>
+                </div>
+              </div>
+              <button 
+                className="modal-close-btn" 
+                onClick={() => setOrderModalOpen(false)}
+                aria-label="Close invoice"
+              >
                 <X size={20} />
               </button>
             </div>
 
-            <div className="order-details-modal-body">
+            <div className="order-details-modal-body printable-invoice-content">
+              {/* Quick Summary Grid */}
               <div className="order-quick-summary">
-                <div>
+                <div className="quick-summary-box order-id-box">
                   <span className="lbl">Order ID</span>
-                  <span className="val">{selectedOrder.orderId}</span>
+                  <div className="order-id-val-row">
+                    <span className="val order-id-text" title={selectedOrder.orderId}>
+                      {selectedOrder.orderId}
+                    </span>
+                    <button
+                      type="button"
+                      className={`btn-copy-order-id ${copiedOrderId ? "copied" : ""}`}
+                      onClick={() => handleCopyOrderId(selectedOrder.orderId)}
+                      title="Copy Order ID"
+                      aria-label="Copy Order ID"
+                    >
+                      {copiedOrderId ? <Check size={13} /> : <Copy size={13} />}
+                      <span>{copiedOrderId ? "Copied" : "Copy"}</span>
+                    </button>
+                  </div>
                 </div>
-                <div>
+                <div className="quick-summary-box">
                   <span className="lbl">Order Date</span>
                   <span className="val">
-                    {new Date(selectedOrder.createdAt).toLocaleString("en-IN")}
+                    {new Date(selectedOrder.createdAt).toLocaleDateString("en-IN", {
+                      day: "numeric",
+                      month: "short",
+                      year: "numeric",
+                    })}
                   </span>
                 </div>
-                <div>
+                <div className="quick-summary-box">
                   <span className="lbl">Status</span>
-                  <span className="val">{getOrderStatusPill(selectedOrder.orderStatus)}</span>
+                  <div className="val status-pill-wrap">
+                    {getOrderStatusPill(selectedOrder.orderStatus)}
+                  </div>
                 </div>
               </div>
 
               {/* Delivery Address */}
               <div className="details-section">
-                <h4>Shipping details</h4>
+                <div className="details-section-title">
+                  <MapPin size={15} />
+                  <h4>Shipping details</h4>
+                </div>
                 <div className="shipping-address-summary">
-                  <strong>{selectedOrder.shippingAddress.title}</strong>
+                  <strong className="shipping-title-name">{selectedOrder.shippingAddress.title}</strong>
                   <p>{selectedOrder.shippingAddress.addressLine1}</p>
                   {selectedOrder.shippingAddress.addressLine2 && <p>{selectedOrder.shippingAddress.addressLine2}</p>}
                   <p>{selectedOrder.shippingAddress.city}, {selectedOrder.shippingAddress.state} - {selectedOrder.shippingAddress.pincode}</p>
-                  <p>Phone: {selectedOrder.shippingAddress.phone}</p>
+                  {selectedOrder.shippingAddress.phone && (
+                    <p className="shipping-phone-row">
+                      <Phone size={13} />
+                      <a href={`tel:${selectedOrder.shippingAddress.phone}`}>
+                        {selectedOrder.shippingAddress.phone}
+                      </a>
+                    </p>
+                  )}
                 </div>
               </div>
 
               {/* Items List */}
               <div className="details-section">
-                <h4>Items purchased</h4>
+                <div className="details-section-title">
+                  <ShoppingBag size={15} />
+                  <h4>
+                    Items purchased ({selectedOrder.items.reduce((acc, it) => acc + (it.quantity || 1), 0)})
+                  </h4>
+                </div>
                 <div className="details-items-table">
                   {selectedOrder.items.map((item, idx) => (
                     <div key={idx} className="details-item-row">
@@ -701,12 +864,15 @@ export default function Profile() {
                         className="details-item-thumb"
                       />
                       <div className="details-item-meta">
-                        <strong className="item-name">{item.product?.name || "Fireworks Item"}</strong>
+                        <strong className="item-name" title={item.product?.name || "Fireworks Item"}>
+                          {item.product?.name || "Fireworks Item"}
+                        </strong>
                         <span className="item-brand">{item.product?.brand || "Brand"}</span>
+                        <span className="item-inline-qty">Qty: {item.quantity}</span>
                       </div>
                       <div className="details-item-price-qty">
-                        <span>₹{item.price.toLocaleString("en-IN")} x {item.quantity}</span>
-                        <strong>₹{(item.price * item.quantity).toLocaleString("en-IN")}</strong>
+                        <span className="item-unit-rate">₹{item.price.toLocaleString("en-IN")} × {item.quantity}</span>
+                        <strong className="item-total-rate">₹{(item.price * item.quantity).toLocaleString("en-IN")}</strong>
                       </div>
                     </div>
                   ))}
@@ -719,27 +885,51 @@ export default function Profile() {
                   <span>Subtotal</span>
                   <span>₹{selectedOrder.subtotal.toLocaleString("en-IN")}</span>
                 </div>
-                <div className="tally-row">
-                  <span>Discount</span>
-                  <span>₹{selectedOrder.discount.toLocaleString("en-IN")}</span>
-                </div>
+                {selectedOrder.discount > 0 && (
+                  <div className="tally-row">
+                    <span>Discount</span>
+                    <span className="discount-green">- ₹{selectedOrder.discount.toLocaleString("en-IN")}</span>
+                  </div>
+                )}
                 <div className="tally-row">
                   <span>Delivery Fee</span>
-                  <span>{selectedOrder.deliveryFee && selectedOrder.deliveryFee > 0 ? `₹${selectedOrder.deliveryFee.toLocaleString("en-IN")}` : "FREE"}</span>
+                  <span className={!selectedOrder.deliveryFee || selectedOrder.deliveryFee === 0 ? "free-badge-txt" : ""}>
+                    {selectedOrder.deliveryFee && selectedOrder.deliveryFee > 0
+                      ? `₹${selectedOrder.deliveryFee.toLocaleString("en-IN")}`
+                      : "FREE"}
+                  </span>
                 </div>
                 <div className="tally-row grand-total">
                   <span>Grand Total</span>
-                  <span>₹{selectedOrder.total.toLocaleString("en-IN")}</span>
+                  <span className="grand-total-val">₹{selectedOrder.total.toLocaleString("en-IN")}</span>
                 </div>
                 <div className="payment-info-tag">
-                  <span>Method: <strong>{selectedOrder.paymentMethod.toUpperCase()}</strong></span>
-                  <span>Payment status: {getPaymentStatusPill(selectedOrder.paymentStatus)}</span>
+                  <div className="payment-method-chunk">
+                    <span className="chunk-lbl">Payment Method</span>
+                    <strong>{selectedOrder.paymentMethod.toUpperCase()}</strong>
+                  </div>
+                  <div className="payment-status-chunk">
+                    <span className="chunk-lbl">Payment Status</span>
+                    {getPaymentStatusPill(selectedOrder.paymentStatus)}
+                  </div>
                 </div>
               </div>
             </div>
 
-            <div className="modal-actions-bar" style={{ padding: 16 }}>
-              <button className="btn-cancel" onClick={() => setOrderModalOpen(false)}>
+            <div className="modal-actions-bar modal-invoice-actions">
+              <button
+                type="button"
+                className="btn-invoice-print"
+                onClick={() => window.print()}
+              >
+                <Printer size={16} />
+                <span>Print Receipt</span>
+              </button>
+              <button
+                type="button"
+                className="btn-cancel"
+                onClick={() => setOrderModalOpen(false)}
+              >
                 Close Invoice
               </button>
             </div>
