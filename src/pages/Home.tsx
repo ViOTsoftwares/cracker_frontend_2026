@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { ChevronRight, Zap, Trophy, Users, ShieldCheck, Truck, CheckCircle, Lock, Tag, Sparkles, PackageOpen } from "lucide-react";
+import { ChevronRight, Zap, Trophy, Users, ShieldCheck, Truck, CheckCircle, Lock, Tag, Flame, PackageOpen } from "lucide-react";
 import { getBanners, type Banner } from "../api/banners";
 import { getCategories, type Category } from "../api/categories";
 import { getFeaturedProducts, getProducts, type Product } from "../api/products";
@@ -9,8 +9,11 @@ import CategoryStrip from "../components/CategoryStrip";
 import ProductCard from "../components/ProductCard";
 import { BannerSkeleton, ProductsGridSkeleton } from "../components/Skeleton";
 import SEO from "../components/SEO";
+import { useSettings } from "../context/SettingsContext";
+import { getImageUrl } from "../utils/imageHelper";
 
 export default function Home() {
+  const { settings } = useSettings();
   const [banners, setBanners] = useState<Banner[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [featured, setFeatured] = useState<Product[]>([]);
@@ -52,7 +55,6 @@ export default function Home() {
         <div className="container">
           <div className="promo-strip-inner">
             {[
-              { icon: <Truck size={20} />, text: "FREE Delivery on ₹500+" },
               { icon: <CheckCircle size={20} />, text: "100% Authentic" },
               { icon: <Lock size={20} />, text: "Safety Certified" },
               { icon: <Tag size={20} />, text: "Factory Price" },
@@ -94,7 +96,19 @@ export default function Home() {
 
       {/* Deal Banner */}
       <div className="deal-banner">
-        <div style={{ marginBottom: 12, display: 'flex', justifyContent: 'center' }}><Sparkles size={40} color="#f97316" /></div>
+        <div style={{ marginBottom: 12, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          {settings.logo ? (
+            <img
+              src={getImageUrl(settings.logo, "logos")}
+              alt={settings.project || "Site Logo"}
+              style={{ maxHeight: "56px", width: "auto", objectFit: "contain", borderRadius: "6px" }}
+            />
+          ) : (
+            <div style={{ width: "48px", height: "48px", background: "var(--primary)", borderRadius: "10px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <Flame size={28} color="#fff" />
+            </div>
+          )}
+        </div>
         <h2>Diwali Mega Sale is LIVE!</h2>
         <p>Up to 60% off on all premium crackers. Limited stock!</p>
         <Link to="/products" className="deal-btn">Shop Now →</Link>

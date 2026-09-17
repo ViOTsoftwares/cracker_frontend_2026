@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
-import { SlidersHorizontal, X } from "lucide-react";
+import { SlidersHorizontal, X, ChevronLeft, ChevronRight } from "lucide-react";
 import { getProducts, type Product } from "../api/products";
 import { getCategories, type Category } from "../api/categories";
 import ProductCard from "../components/ProductCard";
@@ -25,11 +25,20 @@ export default function Products() {
   const maxPrice = searchParams.get("maxPrice") || "";
   const page = parseInt(searchParams.get("page") || "1") || 1;
 
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+  };
+
   const setPage = (p: number | ((prev: number) => number)) => {
     const nextVal = typeof p === "function" ? p(page) : p;
+    if (nextVal === page) return;
     const newParams = new URLSearchParams(searchParams);
     newParams.set("page", String(nextVal));
     setSearchParams(newParams);
+    scrollToTop();
   };
 
   useEffect(() => {
@@ -222,16 +231,32 @@ export default function Products() {
                 {/* Pagination */}
                 {totalPages > 1 && (
                   <div className="pagination">
-                    <button className="page-btn" disabled={page === 1} onClick={() => setPage((p) => p - 1)}>‹</button>
+                    <button 
+                      className="page-btn prev-btn" 
+                      disabled={page === 1} 
+                      onClick={() => setPage((p) => p - 1)}
+                      aria-label="Previous Page"
+                    >
+                      <ChevronLeft size={18} />
+                    </button>
                     {getPageNumbers().map((p, index) => (
                       <button
                         key={index}
                         className={`page-btn ${page === p ? "active" : ""} ${p === "..." ? "dots" : ""}`}
                         disabled={p === "..."}
                         onClick={() => p !== "..." && setPage(p as number)}
-                      >{p}</button>
+                      >
+                        {p}
+                      </button>
                     ))}
-                    <button className="page-btn" disabled={page === totalPages} onClick={() => setPage((p) => p + 1)}>›</button>
+                    <button 
+                      className="page-btn next-btn" 
+                      disabled={page === totalPages} 
+                      onClick={() => setPage((p) => p + 1)}
+                      aria-label="Next Page"
+                    >
+                      <ChevronRight size={18} />
+                    </button>
                   </div>
                 )}
               </>

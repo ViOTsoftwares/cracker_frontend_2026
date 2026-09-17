@@ -43,10 +43,7 @@ export default function ProductCard({ product }: ProductCardProps) {
       </div>
 
       <div className="product-card-body">
-        {product.brand && (
-          <div className="product-card-brand">{product.brand}</div>
-        )}
-        <div className="product-card-name">{product.name}</div>
+        <div className="product-card-name" title={product.name}>{product.name}</div>
 
         <div className="product-card-prices">
           <span className="offer-price">₹{product.offerPrice.toLocaleString()}</span>
@@ -64,8 +61,8 @@ export default function ProductCard({ product }: ProductCardProps) {
           onClick={handleAddToCart}
           disabled={product.stock <= 0}
         >
-          <ShoppingCart size={15} />
-          {product.stock > 0 ? "Add to Cart" : "Out of Stock"}
+          <ShoppingCart size={14} />
+          <span>{product.stock > 0 ? "Add to Cart" : "Out of Stock"}</span>
         </button>
       </div>
     </div>

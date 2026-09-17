@@ -71,11 +71,11 @@ export default function Navbar() {
                 className="navbar-logo-img"
               />
             ) : (
-              <div className="navbar-logo-icon"><Flame size={20} color="#fff" /></div>
+              <>
+                <div className="navbar-logo-icon"><Flame size={20} color="#fff" /></div>
+                <span className="navbar-logo-text">{renderLogoText(settings.project || "Crackers Siva")}</span>
+              </>
             )}
-            <div className="navbar-logo-text">
-              {renderLogoText(settings.project)}
-            </div>
           </Link>
 
           {/* Desktop Search */}

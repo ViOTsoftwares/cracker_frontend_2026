@@ -1,5 +1,19 @@
+import { useRef, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Sparkles, Rocket, Flower2, Bomb, Loader, Aperture, Gift, Smile, Volume2, Flame } from "lucide-react";
+import { 
+  ChevronLeft, 
+  ChevronRight, 
+  Sparkles, 
+  Rocket, 
+  Flower2, 
+  Bomb, 
+  Loader, 
+  Aperture, 
+  Gift, 
+  Smile, 
+  Volume2, 
+  Flame 
+} from "lucide-react";
 import type { Category } from "../api/categories";
 import { getImageUrl } from "../utils/imageHelper";
 
@@ -26,6 +40,9 @@ const getCategoryIcon = (name: string) => {
 
 export default function CategoryStrip({ categories, selected, onSelect }: CategoryStripProps) {
   const navigate = useNavigate();
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
 
   const existingAllCat = categories.find((c) => c.name.toLowerCase() === "all" || c.slug === "all");
   
@@ -40,7 +57,39 @@ export default function CategoryStrip({ categories, selected, onSelect }: Catego
   const filteredCategories = categories.filter((c) => c.name.toLowerCase() !== "all" && c.slug !== "all");
   const allCats = [allCategory, ...filteredCategories];
 
+  const checkScroll = () => {
+    const el = scrollContainerRef.current;
+    if (!el) return;
+    setCanScrollLeft(el.scrollLeft > 8);
+    setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 8);
+  };
 
+  useEffect(() => {
+    const el = scrollContainerRef.current;
+    if (!el) return;
+
+    checkScroll();
+    const timer = setTimeout(checkScroll, 250);
+
+    el.addEventListener("scroll", checkScroll, { passive: true });
+    window.addEventListener("resize", checkScroll);
+
+    return () => {
+      clearTimeout(timer);
+      el.removeEventListener("scroll", checkScroll);
+      window.removeEventListener("resize", checkScroll);
+    };
+  }, [allCats.length]);
+
+  const scroll = (direction: "left" | "right") => {
+    const el = scrollContainerRef.current;
+    if (!el) return;
+    const scrollAmount = Math.max(el.clientWidth * 0.65, 300);
+    el.scrollBy({
+      left: direction === "left" ? -scrollAmount : scrollAmount,
+      behavior: "smooth",
+    });
+  };
 
   const handleClick = (cat: Category) => {
     if (onSelect) {
@@ -53,8 +102,18 @@ export default function CategoryStrip({ categories, selected, onSelect }: Catego
 
   return (
     <div className="category-section">
-      <div className="container">
-        <div className="category-strip-scroll">
+      <div className="container category-strip-container">
+        <button
+          type="button"
+          className={`category-nav-btn prev ${canScrollLeft ? "visible" : ""}`}
+          onClick={() => scroll("left")}
+          disabled={!canScrollLeft}
+          aria-label="Scroll categories left"
+        >
+          <ChevronLeft size={20} />
+        </button>
+
+        <div className="category-strip-scroll" ref={scrollContainerRef}>
           {allCats.map((cat) => (
             <button
               key={cat._id || "all"}
@@ -72,6 +131,16 @@ export default function CategoryStrip({ categories, selected, onSelect }: Catego
             </button>
           ))}
         </div>
+
+        <button
+          type="button"
+          className={`category-nav-btn next ${canScrollRight ? "visible" : ""}`}
+          onClick={() => scroll("right")}
+          disabled={!canScrollRight}
+          aria-label="Scroll categories right"
+        >
+          <ChevronRight size={20} />
+        </button>
       </div>
     </div>
   );

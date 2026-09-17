@@ -28,10 +28,10 @@ export default function BannerSlider({ banners }: BannerSliderProps) {
 
   if (!banners.length) {
     return (
-      <div className="banner-slider" style={{ background: "linear-gradient(135deg,#1e3a5f,#f97316)", height: 360, display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: 16 }}>
-        <div><Sparkles size={72} color="#fff" /></div>
+      <div className="banner-slider" style={{ background: "linear-gradient(135deg, var(--secondary), var(--primary))", height: 360, display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: 16 }}>
+        <div><Sparkles size={72} color="var(--accent)" /></div>
         <h2 style={{ color: "#fff", fontSize: "2rem", fontWeight: 800, textAlign: "center" }}>Festival of Lights Sale</h2>
-        <p style={{ color: "rgba(255,255,255,.8)", fontSize: "1.1rem" }}>Best crackers at the best prices!</p>
+        <p style={{ color: "rgba(255,255,255,.9)", fontSize: "1.1rem" }}>Best crackers at the best prices!</p>
       </div>
     );
   }

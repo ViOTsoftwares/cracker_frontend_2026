@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { ShoppingCart, Minus, Plus, Shield, Truck, RotateCcw, Star, Share2 } from "lucide-react";
+import { ShoppingCart, Minus, Plus, Shield, RotateCcw, Star, Share2 } from "lucide-react";
 import { getProductBySlug, getRelatedProducts, type Product } from "../api/products";
 import { useCart } from "../context/CartContext";
 import ProductCard from "../components/ProductCard";
@@ -191,17 +191,21 @@ export default function ProductDetail() {
           </div>
 
           {/* Product Info */}
-          <div className="detail-info" style={{ position: "relative" }}>
-            <button 
-              className="btn-share" 
-              onClick={handleShare} 
-              title="Share Product"
-              style={{ position: "absolute", top: 0, right: 0 }}
-            >
-              <Share2 size={20} />
-            </button>
-            {product.brand && <div className="detail-brand">{product.brand}</div>}
-            <h1 className="detail-name" style={{ paddingRight: 40 }}>{product.name}</h1>
+          <div className="detail-info">
+            <div className="detail-header-row">
+              <div className="detail-title-col">
+                {product.brand && <div className="detail-brand">{product.brand}</div>}
+                <h1 className="detail-name">{product.name}</h1>
+              </div>
+              <button 
+                className="btn-share" 
+                onClick={handleShare} 
+                title="Share Product"
+                aria-label="Share Product"
+              >
+                <Share2 size={20} />
+              </button>
+            </div>
 
             {/* Rating */}
             {product.ratings > 0 && (
@@ -280,7 +284,6 @@ export default function ProductDetail() {
             {/* Delivery info */}
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
               {[
-                { icon: <Truck size={16} style={{ color: "#10b981" }} />, text: "FREE Delivery on orders above ₹500" },
                 { icon: <Shield size={16} style={{ color: "#3b82f6" }} />, text: "Certified & safe fireworks" },
                 { icon: <RotateCcw size={16} style={{ color: "#f97316" }} />, text: "Easy returns within 7 days" },
               ].map((d) => (
